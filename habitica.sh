@@ -178,22 +178,8 @@ function send_to_server {
 
 ## accept the current group's current quest
 function accept_quest {
-	local response="$(curl -s \
-		-X POST "https://habitica.com/api/v3/groups/$GROUP_ID/quests/accept" \
-		-H "x-api-user: $USER_ID" \
-		-H "x-api-key: $API_TOKEN" \
-		)";
-
-
-	if [ 'true' == "$(echo "$response" | jq -r .success)" ]; then
-		echo 'accepted';
-		return 0;
-	fi;
-
-
-	# extract feedback
-	local message="$(echo "$response" | jq -r .message)";
-
+	local message="$(send_to_server groups/$GROUP_ID/quests/accept .message 2>&1)";	# catch stderr, as already-questing is an error
+	local return=$?;
 
 	# 'already questing' error; return success
 	if [ 'Your party is already on a quest. Try again when the current quest has ended.' == "$message" ]; then
@@ -201,10 +187,8 @@ function accept_quest {
 		return 0;
 	fi;
 
-
-	# unknown error; pass to caller
-	echoerr "$message";
-	return 1;
+	echo "$message";
+	return $return;
 }
 
 
