@@ -37,6 +37,7 @@ function echo_usage {
 	echoerr "";
 	echoerr "Where <command> is:";
 	echoerr "	accept		Accepts the current quest";
+	echoerr "	heal		Casts Blessing";
 	echoerr "	sleep		Go to sleep (enter the Tavern)";
 	echoerr "	status		Returns the API status (up|down)";
 	echoerr "	wake		Stop sleeping (leave the Tavern)";
@@ -210,6 +211,27 @@ function toggle_asleep_awake {
 }
 
 
+
+## cast Blessing
+function heal {
+	local response="$(curl -s \
+		-X POST https://habitica.com/api/v3/user/class/cast/healAll \
+		-H "x-api-user: $USER_ID" \
+		-H "x-api-key: $API_TOKEN" \
+		)";
+	local success="$(echo "$response" | jq -r .success)";
+	if [ 'true' == "$success" ]; then
+		echo 'healed';
+		return 0;
+	fi;
+
+	local message="$(echo "$response" | jq -r .message)";
+
+	echoerr "$message";
+	return 1;
+}
+
+
 ## choose between functions
 function main {
 	if [ 1 -ne $# ]; then
@@ -221,6 +243,11 @@ function main {
 	case "$1" in
 		'accept' )
 			accept_quest;
+			return $?;
+			;;
+
+		'heal' )
+			heal;
 			return $?;
 			;;
 
