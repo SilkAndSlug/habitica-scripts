@@ -245,7 +245,6 @@ function toggle_asleep_awake {
 }
 
 
-
 ## cast Blessing
 function heal {
 	local response="$(curl -s \
