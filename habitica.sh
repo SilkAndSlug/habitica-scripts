@@ -94,6 +94,47 @@ function load_config {
 }
 
 
+## wrapper for Curl
+function get_from_server {
+	if [ 2 -ne $# ]; then
+		echoerr "Usage: get_from_server <relative URL> <response filter>";
+		return 1;
+	fi;
+
+
+	if [ -z "$1" ]; then
+		echoerr "URL not passed";
+		return 1;
+	fi;
+	if [ -z "$2" ]; then
+		echoerr "filter not passed";
+		return 1;
+	fi;
+
+
+	# get JSON from the server
+	local response="$( \
+		curl -s \
+			-H "x-api-user: $USER_ID" \
+			-H "x-api-key: $API_TOKEN" \
+			-X GET \
+			"https://habitica.com/api/v3/$1" \
+		)";
+
+
+	# if we've failed, return the reason
+	if [ 'true' != "$(echo "$response" | jq -r .success)" ]; then
+		echoerr "$(echo "$response" | jq -r .message)";
+		return 1;
+	fi;
+
+
+	# filter the JSON to the desired keys
+	echo "$response" | jq -r "$2";
+	return 0;
+}
+
+
 ## accept the current group's current quest
 function accept_quest {
 	local response="$(curl -s \
@@ -128,18 +169,11 @@ function accept_quest {
 
 ## return the server's status
 function get_api_status {
-	local status=$( curl -s -X GET https://habitica.com/api/v3/status | jq -r .data.status );
+	local status="$(get_from_server status .data.status)";
+	local return=$?;
 
-	if [ 'up' == "$status" ]; then
-		echo 'up';
-		return 0;
-	elif [ 'down' == "$status" ]; then
-		echo 'down';
-		return 0;
-	fi;
-
-	echoerr "Failed to get status; skipping...";
-	return 1;
+	echo "$status";
+	return $return;
 }
 
 
