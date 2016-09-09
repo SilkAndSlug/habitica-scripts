@@ -263,21 +263,12 @@ function toggle_asleep_awake {
 
 ## cast Blessing
 function heal {
-	local response="$(curl -s \
-		-X POST https://habitica.com/api/v3/user/class/cast/healAll \
-		-H "x-api-user: $USER_ID" \
-		-H "x-api-key: $API_TOKEN" \
-		)";
-	local success="$(echo "$response" | jq -r .success)";
-	if [ 'true' == "$success" ]; then
-		echo 'healed';
-		return 0;
-	fi;
+	local response="$(send_to_server user/class/cast/healAll .success)";
 
-	local message="$(echo "$response" | jq -r .message)";
+	if [ 'true' != "$response" ]; then return 1; fi;
 
-	echoerr "$message";
-	return 1;
+	echo 'Healed';
+	return 0;
 }
 
 
