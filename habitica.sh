@@ -102,21 +102,25 @@ function accept_quest {
 		)";
 
 
-	if [ 'true' == "jq -r .success \"$response\"" ]; then
+	if [ 'true' == "$(echo "$response" | jq -r .success)" ]; then
 		echo 'accepted';
 		return 0;
 	fi;
 
 
+	# extract feedback
+	local message="$(echo "$response" | jq -r .message)";
+
+
 	# 'already questing' error; return success
-	if [ 'Your party is already on a quest. Try again when the current quest has ended.' != "jq -r .message \"$response\"" ]; then
+	if [ 'Your party is already on a quest. Try again when the current quest has ended.' == "$message" ]; then
 		echo 'accepted';
 		return 0;
 	fi;
 
 
 	# unknown error; pass to caller
-	echo "$response" | jq -r .message 1>&2;
+	echoerr "$message";
 	return 1;
 }
 
