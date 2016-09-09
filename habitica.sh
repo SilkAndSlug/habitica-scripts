@@ -42,6 +42,54 @@ function echo_usage {
 }
 
 
+## fetch params from ~/.habitica
+function load_config {
+	if [ ! -f "$HOME/.habitica" ]; then
+		echoerr "Can't find ~/.habitica; quitting"
+		exit 1;
+	fi;
+
+
+	## initialise vars (because of set -u)
+	local api_token='';
+	local group_id='';
+	local user_id='';
+
+
+	## load config file
+	source "$HOME/.habitica";
+
+
+	## check configs
+	local is_all_okay=true;
+	if [ 36 -ne ${#group_id} ]; then
+		echoerr "Can't find group_id=<hash> in ~/.habitica";
+		is_all_okay=false;
+	fi;
+	if [ 36 -ne ${#user_id} ]; then
+		echoerr "Can't find user_id=<hash> in ~/.habitica";
+		is_all_okay=false;
+	fi;
+	if [ 36 -ne ${#api_token} ]; then
+		echoerr "Can't find api_token=<hash> in ~/.habitica";
+		is_all_okay=false;
+	fi;
+	if ! $is_all_okay ; then
+		echoerr "Configs missing; quitting"
+		exit 1;
+	fi
+
+
+	## make configs readonly
+	export readonly GROUP_ID="$group_id";
+	export readonly USER_ID="$user_id";
+	export readonly API_TOKEN="$api_token";
+
+
+	return 0;
+}
+
+
 ## return the server's status
 function get_api_status {
 	local status=$( curl -s -X GET https://habitica.com/api/v3/status | jq -r .data.status );
@@ -89,5 +137,6 @@ function main {
 ## Main
 ########
 
+load_config;
 main "$@";
 exit $?;
