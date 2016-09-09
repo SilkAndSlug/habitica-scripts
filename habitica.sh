@@ -36,6 +36,7 @@ function echo_usage {
 	echoerr "Usage: $0 <command>";
 	echoerr "";
 	echoerr "Where <command> is:";
+	echoerr "	accept		Accepts the current quest";
 	echoerr "	status		Returns the API status (up|down)";
 
 	return 0;
@@ -90,6 +91,34 @@ function load_config {
 }
 
 
+## accept the current group's current quest
+function accept_quest {
+	local response="$(curl -s \
+		-X POST "https://habitica.com/api/v3/groups/$GROUP_ID/quests/accept" \
+		-H "x-api-user: $USER_ID" \
+		-H "x-api-key: $API_TOKEN" \
+		)";
+
+
+	if [ 'true' == "jq -r .success \"$response\"" ]; then
+		echo 'accepted';
+		return 0;
+	fi;
+
+
+	# 'already questing' error; return success
+	if [ 'Your party is already on a quest. Try again when the current quest has ended.' != "jq -r .message \"$response\"" ]; then
+		echo 'accepted';
+		return 0;
+	fi;
+
+
+	# unknown error; pass to caller
+	echo "$response" | jq -r .message 1>&2;
+	return 1;
+}
+
+
 ## return the server's status
 function get_api_status {
 	local status=$( curl -s -X GET https://habitica.com/api/v3/status | jq -r .data.status );
@@ -116,6 +145,11 @@ function main {
 	fi;
 
 	case "$1" in
+		'accept' )
+			accept_quest;
+			return $?;
+			;;
+
 		'status' )
 			get_api_status;
 			return $?;
