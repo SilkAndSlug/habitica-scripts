@@ -37,7 +37,9 @@ function echo_usage {
 	echoerr "";
 	echoerr "Where <command> is:";
 	echoerr "	accept		Accepts the current quest";
+	echoerr "	sleep		Go to sleep (enter the Tavern)";
 	echoerr "	status		Returns the API status (up|down)";
+	echoerr "	wake		Stop sleeping (leave the Tavern)";
 
 	return 0;
 }
@@ -136,6 +138,74 @@ function get_api_status {
 }
 
 
+## enter the Tavern
+function start_sleeping {
+	local status="$(toggle_asleep_awake)";
+
+
+	# if we're now awake, toggle again!
+	if [ "asleep" != "$status" ]; then
+		local status="$(toggle_asleep_awake)";
+	fi;
+
+
+	if [ "asleep" != "$status" ]; then
+		echoerr "Failed to sleep";
+		return 1;
+	fi;
+
+	echo 'Asleep';
+	return 0;
+}
+
+
+## leave the Tavern
+function wake {
+	local status="$(toggle_asleep_awake)";
+
+
+	# if we're now asleep, toggle again!
+	if [ "awake" != "$status" ]; then
+		local status="$(toggle_asleep_awake)";
+	fi;
+
+
+	if [ "awake" != "$status" ]; then
+		echoerr "Failed to wake";
+		return 1;
+	fi;
+
+	echo 'Awake';
+	return 0;
+}
+
+
+## toggles awake/asleep
+function toggle_asleep_awake {
+	local response="$(curl -s \
+		-X POST https://habitica.com/api/v3/user/sleep \
+		-H "x-api-user: $USER_ID" \
+		-H "x-api-key: $API_TOKEN" \
+		)";
+
+
+	local success="$(echo "$response" | jq -r .success)";
+	if [ "false" == "$success" ]; then
+		echoerr "Failed to change sleep status; skipping...";
+		return 1;
+	fi;
+
+	local is_asleep="$(echo "$response" | jq -r .data)";
+	if [ "true" == "$is_asleep" ]; then
+		echo 'asleep';
+	else
+		echo 'awake';
+	fi;
+
+	return 0;
+}
+
+
 ## choose between functions
 function main {
 	if [ 1 -ne $# ]; then
@@ -150,8 +220,18 @@ function main {
 			return $?;
 			;;
 
+		'sleep' )
+			start_sleeping;
+			return $?;
+			;;
+
 		'status' )
 			get_api_status;
+			return $?;
+			;;
+
+		'wake' )
+			wake;
 			return $?;
 			;;
 
