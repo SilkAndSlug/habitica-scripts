@@ -37,3 +37,32 @@ function echo_usage {
 
 	return 0;
 }
+
+
+## choose between functions
+function main {
+	if [ 1 -ne $# ]; then
+		echoerr "Can't find command; quitting"
+		echo_usage;
+		exit 1; 
+	fi;
+
+	case "$1" in
+		* )
+			echo_usage;
+			return 1;
+			;;
+	esac;
+
+	init;
+	return 0;
+}
+
+
+
+########
+## Main
+########
+
+main "$@";
+exit $?;
