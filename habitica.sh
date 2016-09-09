@@ -164,7 +164,7 @@ function send_to_server {
 
 	# if we've failed, return the reason
 	if [ 'true' != "$(echo "$response" | jq -r .success)" ]; then
-		echoerr "$(echo "$response" | jq -r .message)";
+		echo "$response" | jq -r .message >&2;
 		return 1;
 	fi;
 
