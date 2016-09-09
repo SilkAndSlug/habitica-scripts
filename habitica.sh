@@ -13,7 +13,6 @@
 
 ## bootstrap
 set -u;	# treat undefined vars as errors
-set -e;	# halt on error
 
 
 
