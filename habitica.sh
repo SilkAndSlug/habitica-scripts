@@ -14,3 +14,18 @@
 ## bootstrap
 set -u;	# treat undefined vars as errors
 set -e;	# halt on error
+
+
+
+########
+## Functions
+########
+
+
+## write to stderr
+function echoerr {
+	if [ 1 -ne $# ]; then return 1; fi;
+
+	echo "$1" 1>&2;
+	return 0;
+}
