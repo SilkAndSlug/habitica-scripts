@@ -135,6 +135,47 @@ function get_from_server {
 }
 
 
+## wrapper for Curl
+function send_to_server {
+	if [ 2 -ne $# ]; then
+		echoerr "Usage: send_to_server <relative URL> <response filter>";
+		return 1;
+	fi;
+
+
+	if [ -z "$1" ]; then
+		echoerr "URL not passed";
+		return 1;
+	fi;
+	if [ -z "$2" ]; then
+		echoerr "filter not passed";
+		return 1;
+	fi;
+
+
+	# get JSON from the server
+	local response="$( \
+		curl -s \
+			-H "x-api-user: $USER_ID" \
+			-H "x-api-key: $API_TOKEN" \
+			-X POST \
+			"https://habitica.com/api/v3/$1" \
+		)";
+
+
+	# if we've failed, return the reason
+	if [ 'true' != "$(echo "$response" | jq -r .success)" ]; then
+		echoerr "$(echo "$response" | jq -r .message)";
+		return 1;
+	fi;
+
+
+	# filter the JSON to the desired keys
+	echo "$response" | jq -r "$2";
+	return 0;
+}
+
+
 ## accept the current group's current quest
 function accept_quest {
 	local response="$(curl -s \
