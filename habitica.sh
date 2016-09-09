@@ -29,3 +29,11 @@ function echoerr {
 	echo "$1" 1>&2;
 	return 0;
 }
+
+
+## explain options
+function echo_usage {
+	echoerr "Usage: $0 <command>";
+
+	return 0;
+}
