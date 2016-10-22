@@ -349,6 +349,8 @@ function main {
 			;;
 
 		* )
+			echoerr "Command '$1' not recognised; quitting";
+			echoerr "";
 			echo_usage;
 			return 1;
 			;;
