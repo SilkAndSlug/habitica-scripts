@@ -328,25 +328,30 @@ function main {
 			return $?;
 			;;
 
+
 		'heal' )
 			heal;
 			return $?;
 			;;
+
 
 		'sleep' )
 			start_sleeping;
 			return $?;
 			;;
 
+
 		'status' )
 			get_api_status;
 			return $?;
 			;;
 
+
 		'wake' )
 			wake;
 			return $?;
 			;;
+
 
 		* )
 			echoerr "Command '$1' not recognised; quitting";
@@ -355,6 +360,7 @@ function main {
 			return 1;
 			;;
 	esac;
+
 
 	init;
 	return 0;
