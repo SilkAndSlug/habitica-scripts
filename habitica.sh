@@ -335,6 +335,12 @@ function main {
 			;;
 
 
+		'say' )
+			post_message "$2";
+			return $?;
+			;;
+
+
 		'sleep' )
 			start_sleeping;
 			return $?;
