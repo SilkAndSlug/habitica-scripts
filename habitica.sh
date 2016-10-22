@@ -311,11 +311,16 @@ function heal {
 # Choose between commands
 ##
 function main {
-	if [ 1 -ne $# ]; then
+	if [ 1 -gt $# ] || [ 2 -lt $# ]; then
 		echoerr "Can't find command; quitting"
 		echo_usage;
-		exit 1; 
+		exit 1;
 	fi;
+
+
+	# if $2 is unset, set to ""
+	${2-}
+
 
 	case "$1" in
 		'accept' )
