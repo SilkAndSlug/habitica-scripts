@@ -1,27 +1,29 @@
 #!/bin/bash
-
-
-
-########
-## Silk's Habitica Scripts
-########
+##
+# Silk's Habitica Scripts
 #
-# Wrappers for Habitica's v3 API
-#
-#########
+# Wrapper for Habitica's v3 API
+##
 
 
+
+###############################################################################
 ## bootstrap
+###############################################################################
+
 set -u;	# treat undefined vars as errors
 
 
 
-########
+###############################################################################
 ## Functions
-########
+###############################################################################
 
 
-## write to stderr
+
+##
+# Write <msg> to stderr
+##
 function echoerr {
 	if [ 1 -ne $# ]; then return 1; fi;
 
@@ -30,7 +32,10 @@ function echoerr {
 }
 
 
-## explain options
+
+##
+# Output parameters
+##
 function echo_usage {
 	echoerr "Usage: $0 <command>";
 	echoerr "";
@@ -45,7 +50,10 @@ function echo_usage {
 }
 
 
-## fetch params from ~/.habitica
+
+##
+# Fetch params from ~/.habitica
+##
 function load_config {
 	if [ ! -f "$HOME/.habitica" ]; then
 		echoerr "Can't find ~/.habitica; quitting"
@@ -93,7 +101,10 @@ function load_config {
 }
 
 
-## wrapper for Curl
+
+##
+# Get a message from the server, using Curl
+##
 function get_from_server {
 	if [ 2 -ne $# ]; then
 		echoerr "Usage: get_from_server <relative URL> <response filter>";
@@ -134,7 +145,10 @@ function get_from_server {
 }
 
 
-## wrapper for Curl
+
+##
+# Send a message to Habitica, using Curl
+##
 function send_to_server {
 	if [ 2 -ne $# ]; then
 		echoerr "Usage: send_to_server <relative URL> <response filter>";
@@ -175,7 +189,10 @@ function send_to_server {
 }
 
 
-## accept the current group's current quest
+
+##
+# Accept the current group's current quest
+##
 function accept_quest {
 	local message="$(send_to_server groups/$GROUP_ID/quests/accept .message 2>&1)";	# catch stderr, as already-questing is an error
 	local return=$?;
@@ -191,7 +208,10 @@ function accept_quest {
 }
 
 
-## return the server's status
+
+##
+# Return the server's status
+##
 function get_api_status {
 	local status="$(get_from_server status .data.status)";
 	local return=$?;
@@ -201,7 +221,10 @@ function get_api_status {
 }
 
 
-## enter the Tavern
+
+##
+# Enter the Tavern
+##
 function start_sleeping {
 	local status="$(toggle_asleep_awake)";
 
@@ -222,7 +245,10 @@ function start_sleeping {
 }
 
 
-## leave the Tavern
+
+##
+# Leave the Tavern
+##
 function wake {
 	local status="$(toggle_asleep_awake)";
 
@@ -243,7 +269,10 @@ function wake {
 }
 
 
-## toggles awake/asleep
+
+##
+# Toggles awake/asleep
+##
 function toggle_asleep_awake {
 	local response="$(send_to_server user/sleep .data)";
 	local return=$?;
@@ -261,7 +290,10 @@ function toggle_asleep_awake {
 }
 
 
-## cast Blessing
+
+##
+# Cast Blessing
+##
 function heal {
 	local response="$(send_to_server user/class/cast/healAll .success)";
 
@@ -272,7 +304,10 @@ function heal {
 }
 
 
-## choose between functions
+
+##
+# Choose between commands
+##
 function main {
 	if [ 1 -ne $# ]; then
 		echoerr "Can't find command; quitting"
@@ -318,9 +353,9 @@ function main {
 
 
 
-########
+###############################################################################
 ## Main
-########
+###############################################################################
 
 load_config;
 main "$@";
