@@ -12,6 +12,7 @@
 ###############################################################################
 
 set -u;	# treat undefined vars as errors
+set -e;	# exit on (uncaught) error
 
 
 
