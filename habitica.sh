@@ -308,6 +308,22 @@ function heal {
 
 
 ##
+# Check if healing required, then heal
+#
+# @todo	implement auto_heal()
+##
+function auto_heal {
+	echoerr "Not implemented! Quitting";
+	return 1;
+
+#curl -s -X GET https://habitica.com/api/v3/groups/6fe8b940-bddd-4c08-b0a5-3217cdff1cb8/members?includeAllPublicFields=true -H 'x-api-user: 5d15b440-f113-41f4-b102-5061d25b9fed' -H 'x-api-key: 6ac92173-f6f8-41fd-af7f-d16ddd78ee25' | jq -r .data | grep 'hp'
+#spellID=healAll
+	return 0;
+}
+
+
+
+##
 # Choose between commands
 ##
 function main {
