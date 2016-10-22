@@ -358,6 +358,6 @@ function main {
 ## Main
 ###############################################################################
 
-load_config;
-main "$@";
+load_config || exit 1;
+main "$@" || exit 1;
 exit $?;
