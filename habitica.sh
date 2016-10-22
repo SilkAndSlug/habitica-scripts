@@ -38,14 +38,15 @@ function echoerr {
 # Output parameters
 ##
 function echo_usage {
-	echoerr "Usage: $0 <command>";
-	echoerr "";
-	echoerr "Where <command> is:";
-	echoerr "	accept		Accepts the current quest";
-	echoerr "	heal		Casts Blessing";
-	echoerr "	sleep		Go to sleep (enter the Tavern)";
-	echoerr "	status		Returns the API status (up|down)";
-	echoerr "	wake		Stop sleeping (leave the Tavern)";
+	echo "";
+	echo "Usage: $(basename "$0") <command>";
+	echo "";
+	echo "Where <command> is:";
+	echo "   accept   Accepts the current quest";
+	echo "   heal     Casts Blessing";
+	echo "   sleep    Go to sleep (enter the Tavern)";
+	echo "   status   Returns the API status (up|down)";
+	echo "   wake     Stop sleeping (leave the Tavern)";
 
 	return 0;
 }
