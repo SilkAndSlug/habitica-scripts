@@ -597,7 +597,6 @@ function route_command() {
 	esac;
 
 
-	init;
 	return 0;
 }
 
