@@ -381,6 +381,7 @@ function route_command() {
 #	None
 ########
 function main() {
+	load_config || return 1;
 	route_command "$@" || return 1;
 	return 0;
 }
@@ -391,6 +392,5 @@ function main() {
 ## Main
 ###############################################################################
 
-load_config || exit 1;
 main "$@" || exit 1;
 exit $?;
