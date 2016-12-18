@@ -1,9 +1,9 @@
 #!/bin/bash
-##
+########
 # Silk's Habitica Scripts
 #
 # Wrapper for Habitica's v3 API
-##
+########
 
 
 
@@ -22,9 +22,9 @@ set -e;	# exit on (uncaught) error
 
 
 
-##
+########
 # Write <msg> to stderr
-##
+########
 function echoerr {
 	if [ 1 -ne $# ]; then return 1; fi;
 
@@ -34,9 +34,9 @@ function echoerr {
 
 
 
-##
+########
 # Output parameters
-##
+########
 function echo_usage {
 	echo "";
 	echo "Usage: $(basename "$0") <command>";
@@ -53,9 +53,9 @@ function echo_usage {
 
 
 
-##
+########
 # Fetch params from ~/.habitica
-##
+########
 function load_config {
 	if [ ! -f "$HOME/.habitica" ]; then
 		echoerr "Can't find ~/.habitica; quitting"
@@ -104,9 +104,9 @@ function load_config {
 
 
 
-##
+########
 # Get a message from the server, using Curl
-##
+########
 function get_from_server {
 	if [ 2 -ne $# ]; then
 		echoerr "Usage: get_from_server <relative URL> <response filter>";
@@ -148,9 +148,9 @@ function get_from_server {
 
 
 
-##
+########
 # Send a message to Habitica, using Curl
-##
+########
 function send_to_server {
 	if [ 2 -ne $# ]; then
 		echoerr "Usage: send_to_server <relative URL> <response filter>";
@@ -192,9 +192,9 @@ function send_to_server {
 
 
 
-##
+########
 # Accept the current group's current quest
-##
+########
 function accept_quest {
 	local message="$(send_to_server groups/$GROUP_ID/quests/accept .message 2>&1)";	# catch stderr, as already-questing is an error
 	local return=$?;
@@ -211,9 +211,9 @@ function accept_quest {
 
 
 
-##
+########
 # Return the server's status
-##
+########
 function get_api_status {
 	local status="$(get_from_server status .data.status)";
 	local return=$?;
@@ -224,9 +224,9 @@ function get_api_status {
 
 
 
-##
+########
 # Enter the Tavern
-##
+########
 function start_sleeping {
 	local status="$(toggle_asleep_awake)";
 
@@ -248,9 +248,9 @@ function start_sleeping {
 
 
 
-##
+########
 # Leave the Tavern
-##
+########
 function wake {
 	local status="$(toggle_asleep_awake)";
 
@@ -272,9 +272,9 @@ function wake {
 
 
 
-##
+########
 # Toggles awake/asleep
-##
+########
 function toggle_asleep_awake {
 	local response="$(send_to_server user/sleep .data)";
 	local return=$?;
@@ -293,9 +293,9 @@ function toggle_asleep_awake {
 
 
 
-##
+########
 # Cast Blessing
-##
+########
 function heal {
 	local response="$(send_to_server user/class/cast/healAll .success)";
 
@@ -307,9 +307,9 @@ function heal {
 
 
 
-##
+########
 # Choose between commands
-##
+########
 function route_command() {
 	if [ 1 -gt $# ] || [ 2 -lt $# ]; then
 		echoerr "Can't find command; quitting"
