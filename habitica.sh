@@ -17,6 +17,19 @@ set -e;	# exit on (uncaught) error
 
 
 ###############################################################################
+## Config
+###############################################################################
+
+
+
+########
+# Entry-point to the REST-ful API
+########
+export readonly HABITICA_API='https://habitica.com/api/v3';
+
+
+
+###############################################################################
 ## Functions
 ###############################################################################
 
@@ -138,11 +151,12 @@ function load_config() {
 # Fetch & output a message from the server
 #
 # Globals
-#	API_TOKEN	User's password
-#	USER_ID		User to query
+#	API_TOKEN		User's password
+#	HABITICA_API	Entry-point to the API
+#	USER_ID			User to query
 #
 # Arguments
-#	1			URL to fetch
+#	1			URL to query, relative to $HABITICA_API/
 #	2			Which part of the response we care about
 #
 # Returns
@@ -172,7 +186,7 @@ function get_from_server() {
 			-H "x-api-user: $USER_ID" \
 			-H "x-api-key: $API_TOKEN" \
 			-X GET \
-			"https://habitica.com/api/v3/$1" \
+			"$HABITICA_API/$1" \
 		)";
 
 
@@ -194,11 +208,12 @@ function get_from_server() {
 # Send a message to Habitica, using Curl
 #
 # Globals
-#	API_TOKEN	User's password
-#	USER_ID		User to query
+#	API_TOKEN		User's password
+#	HABITICA_API	Entry-point to the API
+#	USER_ID			User to query
 #
 # Arguments
-#	1			URL to send to
+#	1			URL to query, relative to $HABITICA_API/
 #	2			Which part of the response we care about
 #
 # Returns
@@ -227,7 +242,7 @@ function send_to_server() {
 			-H "x-api-user: $USER_ID" \
 			-H "x-api-key: $API_TOKEN" \
 			-X POST \
-			"https://habitica.com/api/v3/$1" \
+			"$HABITICA_API/$1" \
 		)";
 
 
