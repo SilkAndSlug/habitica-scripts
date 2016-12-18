@@ -85,7 +85,10 @@ function echoerr() {
 #	0|1			1 on failure, else 0
 ########
 function echo_usage() {
-	echo "Usage: $(basename "$0") <command>";
+	local self;
+	self="$(basename "$0")";
+
+	echo "Usage: $self <command>";
 	echo;
 	echo "Where <command> is:";
 	echo "   accept   Accepts the current quest";
