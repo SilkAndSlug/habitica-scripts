@@ -310,7 +310,7 @@ function heal {
 ##
 # Choose between commands
 ##
-function main {
+function route_command() {
 	if [ 1 -gt $# ] || [ 2 -lt $# ]; then
 		echoerr "Can't find command; quitting"
 		echo_usage;
@@ -363,6 +363,25 @@ function main {
 
 
 	init;
+	return 0;
+}
+
+
+
+########
+# Main()
+#
+# Globals
+#	None
+#
+# Arguments
+#	@		Passed to route_command()
+#
+# Returns
+#	None
+########
+function main() {
+	route_command "$@" || return 1;
 	return 0;
 }
 
