@@ -233,9 +233,10 @@ function get_from_server() {
 # Send a message to Habitica, using Curl
 #
 # Globals
-#	API_TOKEN		User's password
-#	HABITICA_API	Entry-point to the API
-#	USER_ID			User to query
+#	API_TOKEN			User's password
+#	HABITICA_API		Entry-point to the API
+#	SERVER_RESPONSE		Message from server
+#	USER_ID				User to query
 #
 # Arguments
 #	1			URL to query, relative to $HABITICA_API/
@@ -261,8 +262,16 @@ function send_to_server() {
 	fi;
 
 
+	## init vars
+	local message response success;
+
+
+	## empty response
+	SERVER_RESPONSE='';
+
+
 	# get JSON from the server
-	local response="$( \
+	response="$( \
 		curl -s \
 			-H "x-api-user: $USER_ID" \
 			-H "x-api-key: $API_TOKEN" \
@@ -272,14 +281,22 @@ function send_to_server() {
 
 
 	# if we've failed, return the reason
-	if [ 'true' != "$(echo "$response" | jq -r .success)" ]; then
-		echo "$response" | jq -r .message >&2;
+	success="$(echo "$response" | jq -r .success)";
+	message="$(echo "$response" | jq -r .message)";
+	if [ 'true' != "$success" ]; then
+		echoerr "$message";
 		return 1;
 	fi;
 
 
-	# filter the JSON to the desired keys
-	echo "$response" | jq -r "$2";
+	# pass the response via a GLOBAL
+	SERVER_RESPONSE="$(echo "$response" | jq -r "$2")";
+	if [ ! $? ]; then
+		echoerr "Failed to get $2 from server";
+		return 1;
+	fi;
+
+
 	return 0;
 }
 
