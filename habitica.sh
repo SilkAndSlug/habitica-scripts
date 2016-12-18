@@ -371,8 +371,8 @@ function get_api_status() {
 # Enter the Tavern
 #
 # Globals
-#	ASLEEP		Exit-code from toggle_asleep_awake()
-#	AWAKE		Exit-code from toggle_asleep_awake()
+#	ASLEEP		Exit-code from sleeping_toggle()
+#	AWAKE		Exit-code from sleeping_toggle()
 #
 # Arguments
 #	None
@@ -386,14 +386,14 @@ function sleeping_start() {
 
 	# toggle state; returns state
 	state=0;	# default to 0
-	toggle_asleep_awake || state=$?;
+	sleeping_toggle || state=$?;
 	if [ 1 -eq $state ]; then return 1; fi;
 
 
 	# if we're now awake, toggle again!
 	if [ $ASLEEP -ne $state ]; then
 		state=0;	# default to 0
-		toggle_asleep_awake || state=$?;
+		sleeping_toggle || state=$?;
 		if [ 1 -eq $state ]; then return 1; fi;
 	fi;
 
@@ -411,8 +411,8 @@ function sleeping_start() {
 # Leave the Tavern
 #
 # Globals
-#	ASLEEP		Exit-code from toggle_asleep_awake()
-#	AWAKE		Exit-code from toggle_asleep_awake()
+#	ASLEEP		Exit-code from sleeping_toggle()
+#	AWAKE		Exit-code from sleeping_toggle()
 #
 # Arguments
 #	None
@@ -426,14 +426,14 @@ function sleeping_stop() {
 
 	# toggle state; returns state
 	state=0;	# default to 0
-	toggle_asleep_awake || state=$?;
+	sleeping_toggle || state=$?;
 	if [ 1 -eq $state ]; then return 1; fi;
 
 
 	# if we're now asleep, toggle again!
 	if [ $ASLEEP -eq $state ]; then
 		state=0;	# default to 0
-		toggle_asleep_awake || state=$?;
+		sleeping_toggle || state=$?;
 		if [ 1 -eq $state ]; then return 1; fi;
 	fi;
 
@@ -461,7 +461,7 @@ function sleeping_stop() {
 #	1			Failure
 #	2			Asleep
 ########
-function toggle_asleep_awake() {
+function sleeping_toggle() {
 	local response return;
 
 	send_to_server 'user/sleep' '.data' || return 1;
