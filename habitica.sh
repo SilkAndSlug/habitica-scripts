@@ -371,7 +371,8 @@ function get_api_status() {
 # Enter the Tavern
 #
 # Globals
-#	None
+#	ASLEEP		Exit-code from toggle_asleep_awake()
+#	AWAKE		Exit-code from toggle_asleep_awake()
 #
 # Arguments
 #	None
@@ -380,22 +381,26 @@ function get_api_status() {
 #	0|1			1 on failure, else 0
 ########
 function start_sleeping() {
-	local status;
+	local state;
 
 
-	# toggle state
-	status="$(toggle_asleep_awake)";
+	# toggle state; returns state
+	state=0;	# default to 0
+	toggle_asleep_awake || state=$?;
+	if [ 1 -eq $state ]; then return 1; fi;
+
 
 	# if we're now awake, toggle again!
-	if [ 'Asleep' != "$status" ]; then
-		local status="$(toggle_asleep_awake)";
+	if [ $ASLEEP -ne $state ]; then
+		state=0;	# default to 0
+		toggle_asleep_awake || state=$?;
+		if [ 1 -eq $state ]; then return 1; fi;
 	fi;
 
 
-	if [ 'Asleep' != "$status" ]; then
+	if [ $ASLEEP -ne $state ]; then
 		return 1;
 	fi;
-
 
 	return 0;
 }
