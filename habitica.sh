@@ -323,11 +323,13 @@ function get_api_status() {
 #
 # Returns
 #	0|1			1 on failure, else 0
-#	stdout		'Asleep'
 ########
 function start_sleeping() {
-	local status="$(toggle_asleep_awake)";
+	local status;
 
+
+	# toggle state
+	status="$(toggle_asleep_awake)";
 
 	# if we're now awake, toggle again!
 	if [ 'Asleep' != "$status" ]; then
@@ -336,11 +338,10 @@ function start_sleeping() {
 
 
 	if [ 'Asleep' != "$status" ]; then
-		echoerr "Failed to sleep";
 		return 1;
 	fi;
 
-	echo 'Asleep';
+
 	return 0;
 }
 
@@ -481,8 +482,13 @@ function route_command() {
 
 
 		'sleep' )
-			start_sleeping;
-			return $?;
+			start_sleeping || {
+				echoerr 'Failed to sleep';
+				return 1;
+			};
+
+			echo 'Asleep';
+			return 0;
 			;;
 
 
