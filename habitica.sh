@@ -122,6 +122,7 @@ function echo_usage_cast() {
 	echo "Usage: $self cast <spell>";
 	echo;
 	echo "Where <spell> is one of:";
+	echo "   heal     Heal party [Healer only]";
 	echo "   help     Show this text";
 
 	return 0;
@@ -576,6 +577,16 @@ function route_command() {
 
 		'cast' )
 			case "$subcommand" in
+				'heal' )
+					heal || {
+						echoerr 'Failed to heal';
+						return 1;
+					};
+
+					echo 'Healed';
+					;;
+
+
 		'heal' )
 			heal || {
 				echoerr 'Failed to heal';
