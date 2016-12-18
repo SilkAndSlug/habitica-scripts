@@ -41,7 +41,7 @@ export readonly AWAKE=0;
 ## Init vars
 ###############################################################################
 
-export SERVER_RESPONSE;
+export SERVER_RESPONSE='';
 
 
 
@@ -411,7 +411,8 @@ function start_sleeping() {
 # Leave the Tavern
 #
 # Globals
-#	None
+#	ASLEEP		Exit-code from toggle_asleep_awake()
+#	AWAKE		Exit-code from toggle_asleep_awake()
 #
 # Arguments
 #	None
@@ -420,19 +421,24 @@ function start_sleeping() {
 #	0|1			1 on failure, else 0
 ########
 function wake() {
-	local status
+	local state;
 
 
-	# toggle state
-	status="$(toggle_asleep_awake)";
+	# toggle state; returns state
+	state=0;	# default to 0
+	toggle_asleep_awake || state=$?;
+	if [ 1 -eq $state ]; then return 1; fi;
+
 
 	# if we're now asleep, toggle again!
-	if [ 'Awake' != "$status" ]; then
-		status="$(toggle_asleep_awake)";
+	if [ $ASLEEP -eq $state ]; then
+		state=0;	# default to 0
+		toggle_asleep_awake || state=$?;
+		if [ 1 -eq $state ]; then return 1; fi;
 	fi;
 
 
-	if [ 'Awake' != "$status" ]; then
+	if [ $AWAKE -ne $state ]; then
 		return 1;
 	fi;
 
