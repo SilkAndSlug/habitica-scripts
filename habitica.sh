@@ -450,14 +450,17 @@ function heal() {
 ########
 function route_command() {
 	if [ 1 -gt $# ] || [ 2 -lt $# ]; then
-		echoerr "Can't find command; quitting"
+		echoerr "Can't find command; quitting";
+
+		echo;
 		echo_usage;
-		exit 1;
+
+		return 1;
 	fi;
 
 
 	# if $2 is unset, set to ""
-	${2-}
+	${2-};
 
 
 	case "$1" in
