@@ -422,14 +422,13 @@ function toggle_asleep_awake() {
 #
 # Returns
 #	0|1			1 on failure, else 0
-#	stdout		'Healed'
 ########
 function heal() {
-	local response="$(send_to_server user/class/cast/healAll .success)";
+	local response;
 
+	response="$(send_to_server 'user/class/cast/healAll' '.success')";
 	if [ 'true' != "$response" ]; then return 1; fi;
 
-	echo 'Healed';
 	return 0;
 }
 
@@ -471,8 +470,13 @@ function route_command() {
 
 
 		'heal' )
-			heal;
-			return $?;
+			heal || {
+				echoerr 'Failed to heal';
+				return 1;
+			};
+
+			echo 'Healed';
+			return 0;
 			;;
 
 
