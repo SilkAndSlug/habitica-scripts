@@ -505,8 +505,10 @@ function route_command() {
 
 		* )
 			echoerr "Command '$1' not recognised; quitting";
-			echoerr "";
+
+			echo;
 			echo_usage;
+
 			return 1;
 			;;
 	esac;
