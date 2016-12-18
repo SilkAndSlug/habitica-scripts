@@ -512,13 +512,12 @@ function heal() {
 #
 # Arguments
 #	1			Requested command
-#	2			Requested sub-command
 #
 # Returns
 #	0|1			1 on failure, else 0
 ########
 function route_command() {
-	if [ 1 -gt $# ] || [ 2 -lt $# ]; then
+	if [ 1 -gt $# ]; then
 		echoerr "Can't find command; quitting";
 
 		echo;
@@ -529,11 +528,13 @@ function route_command() {
 
 
 	## init vars
-	local return;
-	${2-};	# if $2 is unset, set to ""
+	local command return;
+
+	command="$1";
 
 
-	case "$1" in
+	## route command
+	case "$command" in
 		'accept' )
 			accept_quest || {
 				echoerr 'Failed to accept quest';
@@ -595,7 +596,7 @@ function route_command() {
 
 
 		* )
-			echoerr "Command '$1' not recognised; quitting";
+			echoerr "Command '$command' not recognised; quitting";
 
 			echo;
 			echo_usage;
