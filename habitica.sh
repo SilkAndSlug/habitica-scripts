@@ -326,17 +326,23 @@ function accept_quest() {
 	local message;
 
 
+	## accept quest
 	message="$(send_to_server "groups/$GROUP_ID/quests/accept" '.message' 2>&1)";	# catch stderr and ignore return, as already-questing is an error
 
 
-	# 'already questing' returns 1, so ignore that "error"
-	if [ 'Your party is already on a quest. Try again when the current quest has ended.' != "$message" ]; then
-		echoerr "$message";
-		return 1;
+	## 'already questing' returns 1, so ignore that "error"
+	if [ 'Your party is already on a quest. Try again when the current quest has ended.' = "$message" ]; then
+		return 0;
 	fi;
 
+	## 'already accepted' returns 1, so ignore that "error"
+	if [ 'You already accepted the quest invitation.' = "$message" ]; then
+		return 0;
+	fi;
 
-	return 0;
+	## anything else is an error, so echo and quit
+	echoerr "$message";
+	return 1;
 }
 
 
