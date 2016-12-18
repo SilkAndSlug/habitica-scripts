@@ -584,6 +584,16 @@ function route_command() {
 				'help' | '--help' )
 					echo_usage_cast;
 					;;
+
+
+				* )
+					echoerr "Command '$command $subcommand' not recognised; quitting";
+
+					echo;
+					echo_usage_cast;
+
+					return 1;
+					;;
 			esac;
 			;;	# end 'cast'
 
