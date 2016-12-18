@@ -17,7 +17,7 @@ set -e;	# exit on (uncaught) error
 
 
 ###############################################################################
-## Config
+## Config & definitions
 ###############################################################################
 
 
@@ -26,6 +26,14 @@ set -e;	# exit on (uncaught) error
 # Entry-point to the REST-ful API
 ########
 export readonly HABITICA_API='https://habitica.com/api/v3';
+
+
+
+########
+# Non-standard return values
+########
+export readonly ASLEEP=2;
+export readonly AWAKE=0;
 
 
 
@@ -432,29 +440,26 @@ function wake() {
 # Toggles awake/asleep
 #
 # Globals
-#	None
+#	SERVER_RESPONSE		Reply from the server; should be 'true' or 'false'
 #
 # Arguments
 #	None
 #
 # Returns
-#	0|1			1 on failure, else 0
-#	stdout		'Asleep'|'Awake'
+#	0			Awake
+#	1			Failure
+#	2			Asleep
 ########
 function toggle_asleep_awake() {
-	local response="$(send_to_server user/sleep .data)";
-	local return=$?;
+	local response return;
 
-	if [ 0 -ne $return ]; then return $return; fi;
+	send_to_server 'user/sleep' '.data' || return 1;
 
-
-	if [ "true" == "$response" ]; then
-		echo 'Asleep';
-	else
-		echo 'Awake';
+	if [ 'true' = "$SERVER_RESPONSE" ]; then
+		return $ASLEEP;
 	fi;
 
-	return 0;
+	return $AWAKE;
 }
 
 
