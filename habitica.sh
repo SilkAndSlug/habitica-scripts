@@ -85,9 +85,8 @@ function echoerr() {
 #	0|1			1 on failure, else 0
 ########
 function echo_usage() {
-	echo "";
 	echo "Usage: $(basename "$0") <command>";
-	echo "";
+	echo;
 	echo "Where <command> is:";
 	echo "   accept   Accepts the current quest";
 	echo "   heal     Casts Blessing";
@@ -549,6 +548,8 @@ function route_command() {
 			};
 
 			echo 'Healed';
+		'help' | '--help' )
+			echo_usage;
 			;;
 
 
