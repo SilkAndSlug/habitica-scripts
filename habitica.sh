@@ -30,6 +30,14 @@ export readonly HABITICA_API='https://habitica.com/api/v3';
 
 
 ###############################################################################
+## Init vars
+###############################################################################
+
+export SERVER_RESPONSE;
+
+
+
+###############################################################################
 ## Functions
 ###############################################################################
 
@@ -151,9 +159,10 @@ function load_config() {
 # Fetch & output a message from the server
 #
 # Globals
-#	API_TOKEN		User's password
-#	HABITICA_API	Entry-point to the API
-#	USER_ID			User to query
+#	API_TOKEN			User's password
+#	HABITICA_API		Entry-point to the API
+#	SERVER_RESPONSE		Message from server
+#	USER_ID				User to query
 #
 # Arguments
 #	1			URL to query, relative to $HABITICA_API/
@@ -161,7 +170,7 @@ function load_config() {
 #
 # Returns
 #	0|1			1 on failure, else 0
-#	stdout		Value of $2 in $1
+#	stderr		Error from server
 ########
 function get_from_server() {
 	if [ 2 -ne $# ]; then
@@ -180,8 +189,16 @@ function get_from_server() {
 	fi;
 
 
-	# get JSON from the server
-	local response="$( \
+	## init vars
+	local response success;
+
+
+	## empty the response
+	SERVER_RESPONSE='';
+
+
+	## get JSON from the server
+	response="$( \
 		curl -s \
 			-H "x-api-user: $USER_ID" \
 			-H "x-api-key: $API_TOKEN" \
@@ -191,14 +208,22 @@ function get_from_server() {
 
 
 	# if we've failed, return the reason
-	if [ 'true' != "$(echo "$response" | jq -r .success)" ]; then
-		echoerr "$(echo "$response" | jq -r .message)";
+	success="$(echo "$response" | jq -r .success)";
+	message="$(echo "$response" | jq -r .message)";
+	if [ 'true' !=  "$success" ]; then
+		echoerr "$message";
 		return 1;
 	fi;
 
 
-	# filter the JSON to the desired keys
-	echo "$response" | jq -r "$2";
+	# pass the response via a GLOBAL
+	SERVER_RESPONSE="$(echo "$response" | jq -r "$2")";
+	if [ ! $? ]; then
+		echoerr "Failed to get $2 from server";
+		return 1;
+	fi;
+
+
 	return 0;
 }
 
