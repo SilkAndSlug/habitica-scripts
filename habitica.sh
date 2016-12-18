@@ -320,21 +320,24 @@ function accept_quest() {
 # Return the server's status
 #
 # Globals
-#	None
+#	SERVER_RESPONSE		Message from server
 #
 # Arguments
 #	None
 #
 # Returns
 #	0|1			1 on failure, else 0
-#	stdout		Status
+#	2			Server is *not* up
 ########
 function get_api_status() {
-	local status="$(get_from_server status .data.status)";
-	local return=$?;
+	get_from_server 'status' '.data.status' || return 1;
 
-	echo "$status";
-	return $return;
+	## server may be down -- this is not an error in our script, so don't return 1
+	if [ 'up' != "$SERVER_RESPONSE" ]; then
+		return 2;
+	fi;
+
+	return 0;
 }
 
 
@@ -486,8 +489,9 @@ function route_command() {
 	fi;
 
 
-	# if $2 is unset, set to ""
-	${2-};
+	## init vars
+	local return;
+	${2-};	# if $2 is unset, set to ""
 
 
 	case "$1" in
@@ -525,8 +529,21 @@ function route_command() {
 
 
 		'status' )
-			get_api_status;
-			return $?;
+			return=0;
+			get_api_status || return=$?;
+
+			if [ 1 -eq $return ]; then 
+				echoerr 'Failed to get server status';
+				return 1;
+			fi;
+
+			if [ 2 -eq $return ]; then 
+				echo 'Down';
+				return 2;
+			fi;
+
+			echo 'Okay';
+			return 0;
 			;;
 
 
