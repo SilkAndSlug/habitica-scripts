@@ -123,6 +123,7 @@ function echo_usage_cast() {
 	echo "Where <spell> is one of:";
 	echo "   heal     Heal party [Healer only]";
 	echo "   help     Show this text";
+	echo "   freeze   Preserve streaks overnight [Mage only, once per day]";
 
 	return 0;
 }
@@ -511,6 +512,27 @@ function sleeping_toggle() {
 
 
 ########
+# Cast Chilling Frost on self
+#
+# Globals
+#	None
+#
+# Arguments
+#	None
+#
+# Returns
+#	0|1			1 on failure, else 0
+########
+function cast_freeze() {
+	send_to_server 'user/class/cast/frost' '.success' || return 1;
+	if [ 'true' != "$SERVER_RESPONSE" ]; then return 1; fi;
+
+	return 0;
+}
+
+
+
+########
 # Cast Blessing
 #
 # Globals
@@ -576,6 +598,16 @@ function route_command() {
 
 		'cast' )
 			case "$subcommand" in
+				'freeze' )
+					cast_freeze || {
+						echoerr 'Failed to freeze streaks';
+						return 1;
+					};
+
+					echo 'Streaks frozen';
+					;;
+
+
 				'heal' )
 					heal || {
 						echoerr 'Failed to heal';
