@@ -93,7 +93,6 @@ function echo_usage() {
 	echo "Where <command> is:";
 	echo "   accept   Accepts the current quest";
 	echo "   cast <spell>    See '$self cast help' for more info";
-	echo "   heal     Casts Blessing";
 	echo "   sleep    Go to sleep (enter the Tavern)";
 	echo "   status   Returns the API status (up|down)";
 	echo "   wake     Stop sleeping (leave the Tavern)";
@@ -587,11 +586,6 @@ function route_command() {
 					;;
 
 
-		'heal' )
-			heal || {
-				echoerr 'Failed to heal';
-				return 1;
-			};
 				'help' | '--help' )
 					echo_usage_cast;
 					;;
@@ -609,7 +603,6 @@ function route_command() {
 			;;	# end 'cast'
 
 
-			echo 'Healed';
 		'help' | '--help' )
 			echo_usage;
 			;;
