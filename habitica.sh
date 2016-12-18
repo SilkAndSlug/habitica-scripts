@@ -92,10 +92,37 @@ function echo_usage() {
 	echo;
 	echo "Where <command> is:";
 	echo "   accept   Accepts the current quest";
+	echo "   cast <spell>    See '$self cast help' for more info";
 	echo "   heal     Casts Blessing";
 	echo "   sleep    Go to sleep (enter the Tavern)";
 	echo "   status   Returns the API status (up|down)";
 	echo "   wake     Stop sleeping (leave the Tavern)";
+
+	return 0;
+}
+
+
+
+########
+# Output parameters to stdout
+#
+# Globals
+#	None
+#
+# Arguments
+#	None
+#
+# Returns
+#	0|1			1 on failure, else 0
+########
+function echo_usage_cast() {
+	local self;
+	self="$(basename "$0")";
+
+	echo "Usage: $self cast <spell>";
+	echo;
+	echo "Where <spell> is one of:";
+	echo "   help     Show this text";
 
 	return 0;
 }
@@ -547,11 +574,19 @@ function route_command() {
 			;;
 
 
+		'cast' )
+			case "$subcommand" in
 		'heal' )
 			heal || {
 				echoerr 'Failed to heal';
 				return 1;
 			};
+				'help' | '--help' )
+					echo_usage_cast;
+					;;
+			esac;
+			;;	# end 'cast'
+
 
 			echo 'Healed';
 		'help' | '--help' )
