@@ -494,10 +494,8 @@ function sleeping_toggle() {
 #	0|1			1 on failure, else 0
 ########
 function heal() {
-	local response;
-
-	response="$(send_to_server 'user/class/cast/healAll' '.success')";
-	if [ 'true' != "$response" ]; then return 1; fi;
+	send_to_server 'user/class/cast/healAll' '.success' || return 1;
+	if [ 'true' != "$SERVER_RESPONSE" ]; then return 1; fi;
 
 	return 0;
 }
