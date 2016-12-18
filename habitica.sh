@@ -420,7 +420,7 @@ function sleeping_start() {
 # Returns
 #	0|1			1 on failure, else 0
 ########
-function wake() {
+function sleeping_stop() {
 	local state;
 
 
@@ -581,7 +581,7 @@ function route_command() {
 
 
 		'wake' )
-			wake || {
+			sleeping_stop || {
 				echoerr 'Failed to wake';
 				return 1;
 			}
