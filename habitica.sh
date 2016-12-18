@@ -535,7 +535,6 @@ function route_command() {
 			};
 
 			echo 'Accepted';
-			return 0;
 			;;
 
 
@@ -546,7 +545,6 @@ function route_command() {
 			};
 
 			echo 'Healed';
-			return 0;
 			;;
 
 
@@ -557,7 +555,6 @@ function route_command() {
 			};
 
 			echo 'Asleep';
-			return 0;
 			;;
 
 
@@ -576,7 +573,6 @@ function route_command() {
 			fi;
 
 			echo 'Okay';
-			return 0;
 			;;
 
 
@@ -587,7 +583,6 @@ function route_command() {
 			}
 
 			echo 'Awake';
-			return 0;
 			;;
 
 
