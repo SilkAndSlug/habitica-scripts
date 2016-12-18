@@ -34,7 +34,7 @@ set -e;	# exit on (uncaught) error
 # Returns
 #	0|1			1 on failure, else 0
 ########
-function echoerr {
+function echoerr() {
 	if [ 1 -ne $# ]; then return 1; fi;
 
 	echo -e "$1" 1>&2;
@@ -55,7 +55,7 @@ function echoerr {
 # Returns
 #	0|1			1 on failure, else 0
 ########
-function echo_usage {
+function echo_usage() {
 	echo "";
 	echo "Usage: $(basename "$0") <command>";
 	echo "";
@@ -86,7 +86,7 @@ function echo_usage {
 # Returns
 #	0|1			1 on failure, else 0
 ########
-function load_config {
+function load_config() {
 	if [ ! -f "$HOME/.habitica" ]; then
 		echoerr "Can't find ~/.habitica; quitting"
 		exit 1;
@@ -149,7 +149,7 @@ function load_config {
 #	0|1			1 on failure, else 0
 #	stdout		Value of $2 in $1
 ########
-function get_from_server {
+function get_from_server() {
 	if [ 2 -ne $# ]; then
 		echoerr "Usage: get_from_server <relative URL> <response filter>";
 		return 1;
@@ -204,7 +204,7 @@ function get_from_server {
 # Returns
 #	0|1			1 on failure, else 0
 ########
-function send_to_server {
+function send_to_server() {
 	if [ 2 -ne $# ]; then
 		echoerr "Usage: send_to_server <relative URL> <response filter>";
 		return 1;
@@ -258,7 +258,7 @@ function send_to_server {
 #	0|1			1 on failure, else 0
 #	stdout		Server's response
 ########
-function accept_quest {
+function accept_quest() {
 	local message="$(send_to_server groups/$GROUP_ID/quests/accept .message 2>&1)";	# catch stderr, as already-questing is an error
 	local return=$?;
 
@@ -287,7 +287,7 @@ function accept_quest {
 #	0|1			1 on failure, else 0
 #	stdout		Status
 ########
-function get_api_status {
+function get_api_status() {
 	local status="$(get_from_server status .data.status)";
 	local return=$?;
 
@@ -310,7 +310,7 @@ function get_api_status {
 #	0|1			1 on failure, else 0
 #	stdout		'Asleep'
 ########
-function start_sleeping {
+function start_sleeping() {
 	local status="$(toggle_asleep_awake)";
 
 
@@ -344,7 +344,7 @@ function start_sleeping {
 #	0|1			1 on failure, else 0
 #	stdout		'Awake'
 ########
-function wake {
+function wake() {
 	local status="$(toggle_asleep_awake)";
 
 
@@ -378,7 +378,7 @@ function wake {
 #	0|1			1 on failure, else 0
 #	stdout		'Asleep'|'Awake'
 ########
-function toggle_asleep_awake {
+function toggle_asleep_awake() {
 	local response="$(send_to_server user/sleep .data)";
 	local return=$?;
 
@@ -409,7 +409,7 @@ function toggle_asleep_awake {
 #	0|1			1 on failure, else 0
 #	stdout		'Healed'
 ########
-function heal {
+function heal() {
 	local response="$(send_to_server user/class/cast/healAll .success)";
 
 	if [ 'true' != "$response" ]; then return 1; fi;
