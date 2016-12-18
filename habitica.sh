@@ -357,24 +357,24 @@ function start_sleeping() {
 #
 # Returns
 #	0|1			1 on failure, else 0
-#	stdout		'Awake'
 ########
 function wake() {
-	local status="$(toggle_asleep_awake)";
+	local status
 
+
+	# toggle state
+	status="$(toggle_asleep_awake)";
 
 	# if we're now asleep, toggle again!
 	if [ 'Awake' != "$status" ]; then
-		local status="$(toggle_asleep_awake)";
+		status="$(toggle_asleep_awake)";
 	fi;
 
 
 	if [ 'Awake' != "$status" ]; then
-		echoerr "Failed to wake";
 		return 1;
 	fi;
 
-	echo 'Awake';
 	return 0;
 }
 
@@ -493,8 +493,13 @@ function route_command() {
 
 
 		'wake' )
-			wake;
-			return $?;
+			wake || {
+				echoerr 'Failed to wake';
+				return 1;
+			}
+
+			echo 'Awake';
+			return 0;
 			;;
 
 
