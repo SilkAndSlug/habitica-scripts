@@ -24,6 +24,15 @@ set -e;	# exit on (uncaught) error
 
 ########
 # Write <msg> to stderr
+#
+# Globals
+#	???
+#
+# Arguments
+#	???
+#
+# Returns
+#	???
 ########
 function echoerr {
 	if [ 1 -ne $# ]; then return 1; fi;
@@ -36,6 +45,15 @@ function echoerr {
 
 ########
 # Output parameters
+#
+# Globals
+#	???
+#
+# Arguments
+#	???
+#
+# Returns
+#	???
 ########
 function echo_usage {
 	echo "";
@@ -55,6 +73,15 @@ function echo_usage {
 
 ########
 # Fetch params from ~/.habitica
+#
+# Globals
+#	???
+#
+# Arguments
+#	???
+#
+# Returns
+#	???
 ########
 function load_config {
 	if [ ! -f "$HOME/.habitica" ]; then
@@ -106,6 +133,15 @@ function load_config {
 
 ########
 # Get a message from the server, using Curl
+#
+# Globals
+#	???
+#
+# Arguments
+#	???
+#
+# Returns
+#	???
 ########
 function get_from_server {
 	if [ 2 -ne $# ]; then
@@ -150,6 +186,15 @@ function get_from_server {
 
 ########
 # Send a message to Habitica, using Curl
+#
+# Globals
+#	???
+#
+# Arguments
+#	???
+#
+# Returns
+#	???
 ########
 function send_to_server {
 	if [ 2 -ne $# ]; then
@@ -194,6 +239,15 @@ function send_to_server {
 
 ########
 # Accept the current group's current quest
+#
+# Globals
+#	???
+#
+# Arguments
+#	???
+#
+# Returns
+#	???
 ########
 function accept_quest {
 	local message="$(send_to_server groups/$GROUP_ID/quests/accept .message 2>&1)";	# catch stderr, as already-questing is an error
@@ -213,6 +267,15 @@ function accept_quest {
 
 ########
 # Return the server's status
+#
+# Globals
+#	???
+#
+# Arguments
+#	???
+#
+# Returns
+#	???
 ########
 function get_api_status {
 	local status="$(get_from_server status .data.status)";
@@ -226,6 +289,15 @@ function get_api_status {
 
 ########
 # Enter the Tavern
+#
+# Globals
+#	???
+#
+# Arguments
+#	???
+#
+# Returns
+#	???
 ########
 function start_sleeping {
 	local status="$(toggle_asleep_awake)";
@@ -250,6 +322,15 @@ function start_sleeping {
 
 ########
 # Leave the Tavern
+#
+# Globals
+#	???
+#
+# Arguments
+#	???
+#
+# Returns
+#	???
 ########
 function wake {
 	local status="$(toggle_asleep_awake)";
@@ -274,6 +355,15 @@ function wake {
 
 ########
 # Toggles awake/asleep
+#
+# Globals
+#	???
+#
+# Arguments
+#	???
+#
+# Returns
+#	???
 ########
 function toggle_asleep_awake {
 	local response="$(send_to_server user/sleep .data)";
@@ -295,6 +385,15 @@ function toggle_asleep_awake {
 
 ########
 # Cast Blessing
+#
+# Globals
+#	???
+#
+# Arguments
+#	???
+#
+# Returns
+#	???
 ########
 function heal {
 	local response="$(send_to_server user/class/cast/healAll .success)";
@@ -309,6 +408,15 @@ function heal {
 
 ########
 # Choose between commands
+#
+# Globals
+#	???
+#
+# Arguments
+#	???
+#
+# Returns
+#	???
 ########
 function route_command() {
 	if [ 1 -gt $# ] || [ 2 -lt $# ]; then
