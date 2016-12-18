@@ -271,20 +271,22 @@ function send_to_server() {
 #
 # Returns
 #	0|1			1 on failure, else 0
-#	stdout		Server's response
 ########
 function accept_quest() {
-	local message="$(send_to_server groups/$GROUP_ID/quests/accept .message 2>&1)";	# catch stderr, as already-questing is an error
-	local return=$?;
+	local message;
 
-	# 'already questing' error; return success
-	if [ 'Your party is already on a quest. Try again when the current quest has ended.' == "$message" ]; then
-		echo 'accepted';
-		return 0;
+
+	message="$(send_to_server "groups/$GROUP_ID/quests/accept" '.message' 2>&1)";	# catch stderr and ignore return, as already-questing is an error
+
+
+	# 'already questing' returns 1, so ignore that "error"
+	if [ 'Your party is already on a quest. Try again when the current quest has ended.' != "$message" ]; then
+		echoerr "$message";
+		return 1;
 	fi;
 
-	echo "$message";
-	return $return;
+
+	return 0;
 }
 
 
@@ -465,8 +467,13 @@ function route_command() {
 
 	case "$1" in
 		'accept' )
-			accept_quest;
-			return $?;
+			accept_quest || {
+				echoerr 'Failed to accept quest';
+				return 1;
+			};
+
+			echo 'Accepted';
+			return 0;
 			;;
 
 
