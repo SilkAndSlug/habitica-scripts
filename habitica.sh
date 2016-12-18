@@ -380,7 +380,7 @@ function get_api_status() {
 # Returns
 #	0|1			1 on failure, else 0
 ########
-function start_sleeping() {
+function sleeping_start() {
 	local state;
 
 
@@ -551,7 +551,7 @@ function route_command() {
 
 
 		'sleep' )
-			start_sleeping || {
+			sleeping_start || {
 				echoerr 'Failed to sleep';
 				return 1;
 			};
