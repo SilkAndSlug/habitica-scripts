@@ -26,13 +26,13 @@ set -e;	# exit on (uncaught) error
 # Write <msg> to stderr
 #
 # Globals
-#	???
+#	None
 #
 # Arguments
-#	???
+#	1			Message to write to stderr
 #
 # Returns
-#	???
+#	0|1			1 on failure, else 0
 ########
 function echoerr {
 	if [ 1 -ne $# ]; then return 1; fi;
@@ -44,16 +44,16 @@ function echoerr {
 
 
 ########
-# Output parameters
+# Output parameters to stdout
 #
 # Globals
-#	???
+#	None
 #
 # Arguments
-#	???
+#	None
 #
 # Returns
-#	???
+#	0|1			1 on failure, else 0
 ########
 function echo_usage {
 	echo "";
@@ -75,13 +75,16 @@ function echo_usage {
 # Fetch params from ~/.habitica
 #
 # Globals
-#	???
+#	API_TOKEN	32-char unique ID; from config file
+#	GROUP_ID	32-char unique ID; from config file
+#	HOME		Where to find the config file; set by the shell
+#	USER_ID		32-char unique ID; from config file
 #
 # Arguments
-#	???
+#	None
 #
 # Returns
-#	???
+#	0|1			1 on failure, else 0
 ########
 function load_config {
 	if [ ! -f "$HOME/.habitica" ]; then
@@ -132,16 +135,19 @@ function load_config {
 
 
 ########
-# Get a message from the server, using Curl
+# Fetch & output a message from the server
 #
 # Globals
-#	???
+#	API_TOKEN	User's password
+#	USER_ID		User to query
 #
 # Arguments
-#	???
+#	1			URL to fetch
+#	2			Which part of the response we care about
 #
 # Returns
-#	???
+#	0|1			1 on failure, else 0
+#	stdout		Value of $2 in $1
 ########
 function get_from_server {
 	if [ 2 -ne $# ]; then
@@ -188,13 +194,15 @@ function get_from_server {
 # Send a message to Habitica, using Curl
 #
 # Globals
-#	???
+#	API_TOKEN	User's password
+#	USER_ID		User to query
 #
 # Arguments
-#	???
+#	1			URL to send to
+#	2			Which part of the response we care about
 #
 # Returns
-#	???
+#	0|1			1 on failure, else 0
 ########
 function send_to_server {
 	if [ 2 -ne $# ]; then
@@ -241,13 +249,14 @@ function send_to_server {
 # Accept the current group's current quest
 #
 # Globals
-#	???
+#	GROUP_ID	Which group's quest we're accepting
 #
 # Arguments
-#	???
+#	None
 #
 # Returns
-#	???
+#	0|1			1 on failure, else 0
+#	stdout		Server's response
 ########
 function accept_quest {
 	local message="$(send_to_server groups/$GROUP_ID/quests/accept .message 2>&1)";	# catch stderr, as already-questing is an error
@@ -269,13 +278,14 @@ function accept_quest {
 # Return the server's status
 #
 # Globals
-#	???
+#	None
 #
 # Arguments
-#	???
+#	None
 #
 # Returns
-#	???
+#	0|1			1 on failure, else 0
+#	stdout		Status
 ########
 function get_api_status {
 	local status="$(get_from_server status .data.status)";
@@ -291,13 +301,14 @@ function get_api_status {
 # Enter the Tavern
 #
 # Globals
-#	???
+#	None
 #
 # Arguments
-#	???
+#	None
 #
 # Returns
-#	???
+#	0|1			1 on failure, else 0
+#	stdout		'Asleep'
 ########
 function start_sleeping {
 	local status="$(toggle_asleep_awake)";
@@ -324,13 +335,14 @@ function start_sleeping {
 # Leave the Tavern
 #
 # Globals
-#	???
+#	None
 #
 # Arguments
-#	???
+#	None
 #
 # Returns
-#	???
+#	0|1			1 on failure, else 0
+#	stdout		'Awake'
 ########
 function wake {
 	local status="$(toggle_asleep_awake)";
@@ -357,13 +369,14 @@ function wake {
 # Toggles awake/asleep
 #
 # Globals
-#	???
+#	None
 #
 # Arguments
-#	???
+#	None
 #
 # Returns
-#	???
+#	0|1			1 on failure, else 0
+#	stdout		'Asleep'|'Awake'
 ########
 function toggle_asleep_awake {
 	local response="$(send_to_server user/sleep .data)";
@@ -387,13 +400,14 @@ function toggle_asleep_awake {
 # Cast Blessing
 #
 # Globals
-#	???
+#	None
 #
 # Arguments
-#	???
+#	None
 #
 # Returns
-#	???
+#	0|1			1 on failure, else 0
+#	stdout		'Healed'
 ########
 function heal {
 	local response="$(send_to_server user/class/cast/healAll .success)";
@@ -410,13 +424,14 @@ function heal {
 # Choose between commands
 #
 # Globals
-#	???
+#	None
 #
 # Arguments
-#	???
+#	1			Requested command
+#	2			Requested sub-command
 #
 # Returns
-#	???
+#	0|1			1 on failure, else 0
 ########
 function route_command() {
 	if [ 1 -gt $# ] || [ 2 -lt $# ]; then
@@ -486,7 +501,7 @@ function route_command() {
 #	@		Passed to route_command()
 #
 # Returns
-#	None
+#	0|1			1 on failure, else 0
 ########
 function main() {
 	load_config || return 1;
