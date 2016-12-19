@@ -512,6 +512,7 @@ function heal() {
 #
 # Arguments
 #	1			Requested command
+#	2			Requested sub-command
 #
 # Returns
 #	0|1			1 on failure, else 0
@@ -528,9 +529,10 @@ function route_command() {
 
 
 	## init vars
-	local command return;
+	local command return subcommand;
 
 	command="$1";
+	subcommand="${2-}";	# if $2 is unset, set to ""
 
 
 	## route command
