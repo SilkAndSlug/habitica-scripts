@@ -1,9 +1,9 @@
 #!/bin/bash
-##
+########
 # Silk's Habitica Scripts
 #
 # Wrapper for Habitica's v3 API
-##
+########
 
 
 
@@ -17,15 +17,53 @@ set -e;	# exit on (uncaught) error
 
 
 ###############################################################################
+## Config & definitions
+###############################################################################
+
+
+
+########
+# Entry-point to the REST-ful API
+########
+export readonly HABITICA_API='https://habitica.com/api/v3';
+
+
+
+########
+# Non-standard return values
+########
+export readonly ASLEEP=2;
+export readonly AWAKE=0;
+
+
+
+###############################################################################
+## Init vars
+###############################################################################
+
+export SERVER_RESPONSE='';
+
+
+
+###############################################################################
 ## Functions
 ###############################################################################
 
 
 
-##
+########
 # Write <msg> to stderr
-##
-function echoerr {
+#
+# Globals
+#	None
+#
+# Arguments
+#	1			Message to write to stderr
+#
+# Returns
+#	0|1			1 on failure, else 0
+########
+function echoerr() {
 	if [ 1 -ne $# ]; then return 1; fi;
 
 	echo -e "$1" 1>&2;
@@ -34,13 +72,24 @@ function echoerr {
 
 
 
-##
-# Output parameters
-##
-function echo_usage {
-	echo "";
-	echo "Usage: $(basename "$0") <command>";
-	echo "";
+########
+# Output parameters to stdout
+#
+# Globals
+#	None
+#
+# Arguments
+#	None
+#
+# Returns
+#	0|1			1 on failure, else 0
+########
+function echo_usage() {
+	local self;
+	self="$(basename "$0")";
+
+	echo "Usage: $self <command>";
+	echo;
 	echo "Where <command> is:";
 	echo "   accept   Accepts the current quest";
 	echo "   heal     Casts Blessing";
@@ -53,10 +102,22 @@ function echo_usage {
 
 
 
-##
+########
 # Fetch params from ~/.habitica
-##
-function load_config {
+#
+# Globals
+#	API_TOKEN	32-char unique ID; from config file
+#	GROUP_ID	32-char unique ID; from config file
+#	HOME		Where to find the config file; set by the shell
+#	USER_ID		32-char unique ID; from config file
+#
+# Arguments
+#	None
+#
+# Returns
+#	0|1			1 on failure, else 0
+########
+function load_config() {
 	if [ ! -f "$HOME/.habitica" ]; then
 		echoerr "Can't find ~/.habitica; quitting"
 		exit 1;
@@ -104,10 +165,24 @@ function load_config {
 
 
 
-##
-# Get a message from the server, using Curl
-##
-function get_from_server {
+########
+# Fetch & output a message from the server
+#
+# Globals
+#	API_TOKEN			User's password
+#	HABITICA_API		Entry-point to the API
+#	SERVER_RESPONSE		Message from server
+#	USER_ID				User to query
+#
+# Arguments
+#	1			URL to query, relative to $HABITICA_API/
+#	2			Which part of the response we care about
+#
+# Returns
+#	0|1			1 on failure, else 0
+#	stderr		Error from server
+########
+function get_from_server() {
 	if [ 2 -ne $# ]; then
 		echoerr "Usage: get_from_server <relative URL> <response filter>";
 		return 1;
@@ -124,34 +199,63 @@ function get_from_server {
 	fi;
 
 
-	# get JSON from the server
-	local response="$( \
+	## init vars
+	local response success;
+
+
+	## empty the response
+	SERVER_RESPONSE='';
+
+
+	## get JSON from the server
+	response="$( \
 		curl -s \
 			-H "x-api-user: $USER_ID" \
 			-H "x-api-key: $API_TOKEN" \
 			-X GET \
-			"https://habitica.com/api/v3/$1" \
+			"$HABITICA_API/$1" \
 		)";
 
 
 	# if we've failed, return the reason
-	if [ 'true' != "$(echo "$response" | jq -r .success)" ]; then
-		echoerr "$(echo "$response" | jq -r .message)";
+	success="$(echo "$response" | jq -r .success)";
+	message="$(echo "$response" | jq -r .message)";
+	if [ 'true' !=  "$success" ]; then
+		echoerr "$message";
 		return 1;
 	fi;
 
 
-	# filter the JSON to the desired keys
-	echo "$response" | jq -r "$2";
+	# pass the response via a GLOBAL
+	SERVER_RESPONSE="$(echo "$response" | jq -r "$2")";
+	if [ ! $? ]; then
+		echoerr "Failed to get $2 from server";
+		return 1;
+	fi;
+
+
 	return 0;
 }
 
 
 
-##
+########
 # Send a message to Habitica, using Curl
-##
-function send_to_server {
+#
+# Globals
+#	API_TOKEN			User's password
+#	HABITICA_API		Entry-point to the API
+#	SERVER_RESPONSE		Message from server
+#	USER_ID				User to query
+#
+# Arguments
+#	1			URL to query, relative to $HABITICA_API/
+#	2			Which part of the response we care about
+#
+# Returns
+#	0|1			1 on failure, else 0
+########
+function send_to_server() {
 	if [ 2 -ne $# ]; then
 		echoerr "Usage: send_to_server <relative URL> <response filter>";
 		return 1;
@@ -168,201 +272,359 @@ function send_to_server {
 	fi;
 
 
+	## init vars
+	local message response success;
+
+
+	## empty response
+	SERVER_RESPONSE='';
+
+
 	# get JSON from the server
-	local response="$( \
+	response="$( \
 		curl -s \
 			-H "x-api-user: $USER_ID" \
 			-H "x-api-key: $API_TOKEN" \
 			-X POST \
-			"https://habitica.com/api/v3/$1" \
+			"$HABITICA_API/$1" \
 		)";
 
 
 	# if we've failed, return the reason
-	if [ 'true' != "$(echo "$response" | jq -r .success)" ]; then
-		echo "$response" | jq -r .message >&2;
+	success="$(echo "$response" | jq -r .success)";
+	message="$(echo "$response" | jq -r .message)";
+	if [ 'true' != "$success" ]; then
+		echoerr "$message";
 		return 1;
 	fi;
 
 
-	# filter the JSON to the desired keys
-	echo "$response" | jq -r "$2";
+	# pass the response via a GLOBAL
+	SERVER_RESPONSE="$(echo "$response" | jq -r "$2")";
+	if [ ! $? ]; then
+		echoerr "Failed to get $2 from server";
+		return 1;
+	fi;
+
+
 	return 0;
 }
 
 
 
-##
+########
 # Accept the current group's current quest
-##
-function accept_quest {
-	local message="$(send_to_server groups/$GROUP_ID/quests/accept .message 2>&1)";	# catch stderr, as already-questing is an error
-	local return=$?;
+#
+# Globals
+#	GROUP_ID	Which group's quest we're accepting
+#
+# Arguments
+#	None
+#
+# Returns
+#	0|1			1 on failure, else 0
+########
+function accept_quest() {
+	local message;
 
-	# 'already questing' error; return success
-	if [ 'Your party is already on a quest. Try again when the current quest has ended.' == "$message" ]; then
-		echo 'accepted';
+
+	## accept quest
+	message="$(send_to_server "groups/$GROUP_ID/quests/accept" '.message' 2>&1)";	# catch stderr and ignore return, as already-questing is an error
+
+
+	## 'already questing' returns 1, so ignore that "error"
+	if [ 'Your party is already on a quest. Try again when the current quest has ended.' = "$message" ]; then
 		return 0;
 	fi;
 
-	echo "$message";
-	return $return;
+	## 'already accepted' returns 1, so ignore that "error"
+	if [ 'You already accepted the quest invitation.' = "$message" ]; then
+		return 0;
+	fi;
+
+	## anything else is an error, so echo and quit
+	echoerr "$message";
+	return 1;
 }
 
 
 
-##
+########
 # Return the server's status
-##
-function get_api_status {
-	local status="$(get_from_server status .data.status)";
-	local return=$?;
+#
+# Globals
+#	SERVER_RESPONSE		Message from server
+#
+# Arguments
+#	None
+#
+# Returns
+#	0|1			1 on failure, else 0
+#	2			Server is *not* up
+########
+function get_api_status() {
+	get_from_server 'status' '.data.status' || return 1;
 
-	echo "$status";
-	return $return;
+	## server may be down -- this is not an error in our script, so don't return 1
+	if [ 'up' != "$SERVER_RESPONSE" ]; then
+		return 2;
+	fi;
+
+	return 0;
 }
 
 
 
-##
+########
 # Enter the Tavern
-##
-function start_sleeping {
-	local status="$(toggle_asleep_awake)";
+#
+# Globals
+#	ASLEEP		Exit-code from sleeping_toggle()
+#	AWAKE		Exit-code from sleeping_toggle()
+#
+# Arguments
+#	None
+#
+# Returns
+#	0|1			1 on failure, else 0
+########
+function sleeping_start() {
+	local state;
+
+
+	# toggle state; returns state
+	state=0;	# default to 0
+	sleeping_toggle || state=$?;
+	if [ 1 -eq $state ]; then return 1; fi;
 
 
 	# if we're now awake, toggle again!
-	if [ 'Asleep' != "$status" ]; then
-		local status="$(toggle_asleep_awake)";
+	if [ $ASLEEP -ne $state ]; then
+		state=0;	# default to 0
+		sleeping_toggle || state=$?;
+		if [ 1 -eq $state ]; then return 1; fi;
 	fi;
 
 
-	if [ 'Asleep' != "$status" ]; then
-		echoerr "Failed to sleep";
+	if [ $ASLEEP -ne $state ]; then
 		return 1;
 	fi;
 
-	echo 'Asleep';
 	return 0;
 }
 
 
 
-##
+########
 # Leave the Tavern
-##
-function wake {
-	local status="$(toggle_asleep_awake)";
+#
+# Globals
+#	ASLEEP		Exit-code from sleeping_toggle()
+#	AWAKE		Exit-code from sleeping_toggle()
+#
+# Arguments
+#	None
+#
+# Returns
+#	0|1			1 on failure, else 0
+########
+function sleeping_stop() {
+	local state;
+
+
+	# toggle state; returns state
+	state=0;	# default to 0
+	sleeping_toggle || state=$?;
+	if [ 1 -eq $state ]; then return 1; fi;
 
 
 	# if we're now asleep, toggle again!
-	if [ 'Awake' != "$status" ]; then
-		local status="$(toggle_asleep_awake)";
+	if [ $ASLEEP -eq $state ]; then
+		state=0;	# default to 0
+		sleeping_toggle || state=$?;
+		if [ 1 -eq $state ]; then return 1; fi;
 	fi;
 
 
-	if [ 'Awake' != "$status" ]; then
-		echoerr "Failed to wake";
+	if [ $AWAKE -ne $state ]; then
 		return 1;
 	fi;
 
-	echo 'Awake';
 	return 0;
 }
 
 
 
-##
+########
 # Toggles awake/asleep
-##
-function toggle_asleep_awake {
-	local response="$(send_to_server user/sleep .data)";
-	local return=$?;
+#
+# Globals
+#	SERVER_RESPONSE		Reply from the server; should be 'true' or 'false'
+#
+# Arguments
+#	None
+#
+# Returns
+#	0			Awake
+#	1			Failure
+#	2			Asleep
+########
+function sleeping_toggle() {
+	local response return;
 
-	if [ 0 -ne $return ]; then return $return; fi;
+	send_to_server 'user/sleep' '.data' || return 1;
 
-
-	if [ "true" == "$response" ]; then
-		echo 'Asleep';
-	else
-		echo 'Awake';
+	if [ 'true' = "$SERVER_RESPONSE" ]; then
+		return $ASLEEP;
 	fi;
 
-	return 0;
+	return $AWAKE;
 }
 
 
 
-##
+########
 # Cast Blessing
-##
-function heal {
-	local response="$(send_to_server user/class/cast/healAll .success)";
+#
+# Globals
+#	None
+#
+# Arguments
+#	None
+#
+# Returns
+#	0|1			1 on failure, else 0
+########
+function heal() {
+	send_to_server 'user/class/cast/healAll' '.success' || return 1;
+	if [ 'true' != "$SERVER_RESPONSE" ]; then return 1; fi;
 
-	if [ 'true' != "$response" ]; then return 1; fi;
-
-	echo 'Healed';
 	return 0;
 }
 
 
 
-##
+########
 # Choose between commands
-##
-function main {
+#
+# Globals
+#	None
+#
+# Arguments
+#	1			Requested command
+#	2			Requested sub-command
+#
+# Returns
+#	0|1			1 on failure, else 0
+########
+function route_command() {
 	if [ 1 -gt $# ] || [ 2 -lt $# ]; then
-		echoerr "Can't find command; quitting"
+		echoerr "Can't find command; quitting";
+
+		echo;
 		echo_usage;
-		exit 1;
+
+		return 1;
 	fi;
 
 
-	# if $2 is unset, set to ""
-	${2-}
+	## init vars
+	local return;
+	${2-};	# if $2 is unset, set to ""
 
 
 	case "$1" in
 		'accept' )
-			accept_quest;
-			return $?;
+			accept_quest || {
+				echoerr 'Failed to accept quest';
+				return 1;
+			};
+
+			echo 'Accepted';
 			;;
 
 
 		'heal' )
-			heal;
-			return $?;
+			heal || {
+				echoerr 'Failed to heal';
+				return 1;
+			};
+
+			echo 'Healed';
+		'help' | '--help' )
+			echo_usage;
 			;;
 
 
 		'sleep' )
-			start_sleeping;
-			return $?;
+			sleeping_start || {
+				echoerr 'Failed to sleep';
+				return 1;
+			};
+
+			echo 'Asleep';
 			;;
 
 
 		'status' )
-			get_api_status;
-			return $?;
+			return=0;
+			get_api_status || return=$?;
+
+			if [ 1 -eq $return ]; then 
+				echoerr 'Failed to get server status';
+				return 1;
+			fi;
+
+			if [ 2 -eq $return ]; then 
+				echo 'Down';
+				return 2;
+			fi;
+
+			echo 'Okay';
 			;;
 
 
 		'wake' )
-			wake;
-			return $?;
+			sleeping_stop || {
+				echoerr 'Failed to wake';
+				return 1;
+			}
+
+			echo 'Awake';
 			;;
 
 
 		* )
 			echoerr "Command '$1' not recognised; quitting";
-			echoerr "";
+
+			echo;
 			echo_usage;
+
 			return 1;
 			;;
 	esac;
 
 
-	init;
+	return 0;
+}
+
+
+
+########
+# Main()
+#
+# Globals
+#	None
+#
+# Arguments
+#	@		Passed to route_command()
+#
+# Returns
+#	0|1			1 on failure, else 0
+########
+function main() {
+	load_config || return 1;
+	route_command "$@" || return 1;
 	return 0;
 }
 
@@ -372,6 +634,5 @@ function main {
 ## Main
 ###############################################################################
 
-load_config || exit 1;
-main "$@" || exit 1;
-exit $?;
+main "$@" || exit $?;
+exit 0;
