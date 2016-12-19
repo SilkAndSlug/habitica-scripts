@@ -92,10 +92,38 @@ function echo_usage() {
 	echo;
 	echo "Where <command> is:";
 	echo "   accept   Accepts the current quest";
-	echo "   heal     Casts Blessing";
+	echo "   cast <spell>    See '$self cast help' for more info";
 	echo "   sleep    Go to sleep (enter the Tavern)";
 	echo "   status   Returns the API status (up|down)";
 	echo "   wake     Stop sleeping (leave the Tavern)";
+
+	return 0;
+}
+
+
+
+########
+# Output parameters to stdout
+#
+# Globals
+#	None
+#
+# Arguments
+#	None
+#
+# Returns
+#	0|1			1 on failure, else 0
+########
+function echo_usage_cast() {
+	local self;
+	self="$(basename "$0")";
+
+	echo "Usage: $self cast <spell>";
+	echo;
+	echo "Where <spell> is one of:";
+	echo "   heal     Heal party [Healer only]";
+	echo "   help     Show this text";
+	echo "   freeze   Preserve streaks overnight [Mage only, once per day]";
 
 	return 0;
 }
@@ -484,6 +512,27 @@ function sleeping_toggle() {
 
 
 ########
+# Cast Chilling Frost on self
+#
+# Globals
+#	None
+#
+# Arguments
+#	None
+#
+# Returns
+#	0|1			1 on failure, else 0
+########
+function cast_freeze() {
+	send_to_server 'user/class/cast/frost' '.success' || return 1;
+	if [ 'true' != "$SERVER_RESPONSE" ]; then return 1; fi;
+
+	return 0;
+}
+
+
+
+########
 # Cast Blessing
 #
 # Globals
@@ -495,7 +544,7 @@ function sleeping_toggle() {
 # Returns
 #	0|1			1 on failure, else 0
 ########
-function heal() {
+function cast_heal() {
 	send_to_server 'user/class/cast/healAll' '.success' || return 1;
 	if [ 'true' != "$SERVER_RESPONSE" ]; then return 1; fi;
 
@@ -518,7 +567,7 @@ function heal() {
 #	0|1			1 on failure, else 0
 ########
 function route_command() {
-	if [ 1 -gt $# ] || [ 2 -lt $# ]; then
+	if [ 1 -gt $# ]; then
 		echoerr "Can't find command; quitting";
 
 		echo;
@@ -529,11 +578,14 @@ function route_command() {
 
 
 	## init vars
-	local return;
-	${2-};	# if $2 is unset, set to ""
+	local command return subcommand;
+
+	command="$1";
+	subcommand="${2-}";	# if $2 is unset, set to ""
 
 
-	case "$1" in
+	## route command
+	case "$command" in
 		'accept' )
 			accept_quest || {
 				echoerr 'Failed to accept quest';
@@ -544,13 +596,45 @@ function route_command() {
 			;;
 
 
-		'heal' )
-			heal || {
-				echoerr 'Failed to heal';
-				return 1;
-			};
+		'cast' )
+			case "$subcommand" in
+				'freeze' )
+					cast_freeze || {
+						echoerr 'Failed to freeze streaks';
+						return 1;
+					};
 
-			echo 'Healed';
+					echo 'Streaks frozen';
+					;;
+
+
+				'heal' )
+					cast_heal || {
+						echoerr 'Failed to heal';
+						return 1;
+					};
+
+					echo 'Healed';
+					;;
+
+
+				'help' | '--help' )
+					echo_usage_cast;
+					;;
+
+
+				* )
+					echoerr "Command '$command $subcommand' not recognised; quitting";
+
+					echo;
+					echo_usage_cast;
+
+					return 1;
+					;;
+			esac;
+			;;	# end 'cast'
+
+
 		'help' | '--help' )
 			echo_usage;
 			;;
@@ -595,7 +679,7 @@ function route_command() {
 
 
 		* )
-			echoerr "Command '$1' not recognised; quitting";
+			echoerr "Command '$command' not recognised; quitting";
 
 			echo;
 			echo_usage;
