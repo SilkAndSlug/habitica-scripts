@@ -544,7 +544,7 @@ function cast_freeze() {
 # Returns
 #	0|1			1 on failure, else 0
 ########
-function heal() {
+function cast_heal() {
 	send_to_server 'user/class/cast/healAll' '.success' || return 1;
 	if [ 'true' != "$SERVER_RESPONSE" ]; then return 1; fi;
 
@@ -609,7 +609,7 @@ function route_command() {
 
 
 				'heal' )
-					heal || {
+					cast_heal || {
 						echoerr 'Failed to heal';
 						return 1;
 					};
