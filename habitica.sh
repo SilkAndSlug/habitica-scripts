@@ -312,6 +312,7 @@ function send_to_server() {
 	response="$( \
 		curl \
 			--silent \
+			--data "" \
 			--header "x-api-user: $USER_ID" \
 			--header "x-api-key: $API_TOKEN" \
 			--request POST \
