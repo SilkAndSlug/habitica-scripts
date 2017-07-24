@@ -310,17 +310,22 @@ function send_to_server() {
 
 	# get JSON from the server
 	response="$( \
-		curl -s \
-			-H "x-api-user: $USER_ID" \
-			-H "x-api-key: $API_TOKEN" \
-			-X POST \
+		curl \
+			--silent \
+			--data "" \
+			--header "x-api-user: $USER_ID" \
+			--header "x-api-key: $API_TOKEN" \
+			--request POST \
 			"$HABITICA_API/$1" \
 		)";
+	#echo "send_to_server::response $response";
 
 
 	# if we've failed, return the reason
 	success="$(echo "$response" | jq -r .success)";
+	#echo "send_to_server::success $success";
 	message="$(echo "$response" | jq -r .message)";
+	#echo "send_to_server::message $message";
 	if [ 'true' != "$success" ]; then
 		echoerr "$message";
 		return 1;
@@ -358,6 +363,7 @@ function accept_quest() {
 
 	## accept quest
 	message="$(send_to_server "groups/$GROUP_ID/quests/accept" '.message' 2>&1)";	# catch stderr and ignore return, as already-questing is an error
+	#echo "accept_quest::message $message";
 
 
 	## 'no invites' returns 1, so ignore that "error"
@@ -587,7 +593,10 @@ function route_command() {
 	local command return subcommand;
 
 	command="$1";
+	#echo "route_command::command $command";
+
 	subcommand="${2-}";	# if $2 is unset, set to ""
+	#echo "route_command::subcommand $subcommand";
 
 
 	## route command
