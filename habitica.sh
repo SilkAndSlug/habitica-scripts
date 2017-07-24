@@ -310,10 +310,11 @@ function send_to_server() {
 
 	# get JSON from the server
 	response="$( \
-		curl -s \
-			-H "x-api-user: $USER_ID" \
-			-H "x-api-key: $API_TOKEN" \
-			-X POST \
+		curl \
+			--silent \
+			--header "x-api-user: $USER_ID" \
+			--header "x-api-key: $API_TOKEN" \
+			--request POST \
 			"$HABITICA_API/$1" \
 		)";
 	#echo "send_to_server::response $response";
