@@ -25,6 +25,7 @@ set -e;	# exit on (uncaught) error
 ########
 # Entry-point to the REST-ful API
 ########
+
 export readonly HABITICA_API='https://habitica.com/api/v3';
 
 
@@ -32,6 +33,7 @@ export readonly HABITICA_API='https://habitica.com/api/v3';
 ########
 # Non-standard return values
 ########
+
 export readonly ASLEEP=2;
 export readonly AWAKE=0;
 
@@ -159,6 +161,7 @@ function load_config() {
 
 
 	## load config file
+	# shellcheck	source=/home/steve/.habitica
 	source "$HOME/.habitica";
 
 
