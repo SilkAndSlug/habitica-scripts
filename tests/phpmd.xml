@@ -1,0 +1,230 @@
+<?xml version="1.0"?>
+
+<ruleset name="Rules to which the site's code should already comply. New rules are tested in ../phpmd-tmp.xml"
+         xmlns="http://pmd.sf.net/ruleset/1.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sf.net/ruleset/1.0.0 http://pmd.sf.net/ruleset_xml_schema.xsd"
+         xsi:noNamespaceSchemaLocation="http://pmd.sf.net/ruleset_xml_schema.xsd">
+
+
+    <rule name="UnusedPrivateField"
+          since="0.2"
+          message="Avoid unused private fields such as '{0}'."
+          class="PHP_PMD_Rule_UnusedPrivateField"
+          externalInfoUrl="http://phpmd.org/rules/unusedcode.html#unusedprivatefield">
+        <description>
+Detects when a private field is declared and/or assigned a value, but not used.
+        </description>
+        <priority>3</priority>
+        <example>
+<![CDATA[
+class Something
+{
+private static $FOO = 2; // Unused
+private $i = 5; // Unused
+private $j = 6;
+public function addOne()
+{
+return $this->j++;
+}
+}
+]]>
+        </example>
+    </rule>
+
+
+    <rule name="UnusedLocalVariable"
+          since="0.2"
+          message="Avoid unused local variables such as '{0}'."
+          class="PHP_PMD_Rule_UnusedLocalVariable"
+          externalInfoUrl="http://phpmd.org/rules/unusedcode.html#unusedlocalvariable">
+        <description>
+Detects when a local variable is declared and/or assigned, but not used.
+        </description>
+        <priority>3</priority>
+        <example>
+<![CDATA[
+class Foo {
+public function doSomething()
+{
+$i = 5; // Unused
+}
+}
+]]>
+        </example>
+    </rule>
+
+
+    <rule name="UnusedPrivateMethod"
+          since="0.2"
+          message="Avoid unused private methods such as '{0}'."
+          class="PHP_PMD_Rule_UnusedPrivateMethod"
+          externalInfoUrl="http://phpmd.org/rules/unusedcode.html#unusedprivatemethod">
+        <description>
+Unused Private Method detects when a private method is declared but is unused.
+        </description>
+        <priority>3</priority>
+        <example>
+<![CDATA[
+class Something
+{
+private function foo() {} // unused
+}
+]]>
+        </example>
+    </rule>
+
+
+    <rule name="UnusedFormalParameter"
+          since="0.2"
+          message="Avoid unused parameters such as '{0}'."
+          class="PHP_PMD_Rule_UnusedFormalParameter"
+          externalInfoUrl="http://phpmd.org/rules/unusedcode.html#unusedformalparameter">
+        <description>
+Avoid passing parameters to methods or constructors and then not using those parameters.
+        </description>
+        <priority>3</priority>
+        <example>
+<![CDATA[
+class Foo
+{
+private function bar($howdy)
+{
+// $howdy is not used
+}
+}
+]]>
+        </example>
+    </rule>
+
+    <rule name="CouplingBetweenObjects"
+          since="1.1.0"
+          message="The class {0} has a coupling between objects value of {1}. Consider to reduce the number of dependencies under {2}."
+          class="PHP_PMD_Rule_Design_CouplingBetweenObjects"
+          externalInfoUrl="http://phpmd.org/rules/design.html#couplingbetweenobjects">
+        <description>
+            <![CDATA[
+A class with to many dependencies has negative impacts on several quality
+aspects of a class. This includes quality criterias like stability,
+maintainability and understandability
+            ]]>
+        </description>
+        <priority>2</priority>
+        <properties>
+            <property name="minimum" value="13" description="Maximum number of acceptable dependencies." />
+        </properties>
+        <example>
+            <![CDATA[
+class Foo {
+    /**
+     * @var \foo\bar\X
+     */
+    private $x = null;
+
+    /**
+     * @var \foo\bar\Y
+     */
+    private $y = null;
+
+    /**
+     * @var \foo\bar\Z
+     */
+    private $z = null;
+
+    public function setFoo(\Foo $foo) {}
+    public function setBar(\Bar $bar) {}
+    public function setBaz(\Baz $baz) {}
+
+    /**
+     * @return \SplObjectStorage
+     * @throws \OutOfRangeException
+     * @throws \InvalidArgumentException
+     * @throws \ErrorException
+     */
+    public function process(Iterator $it) {}
+
+    // ...
+}
+            ]]>
+        </example>
+    </rule>
+
+
+
+    <rule name="ConstructorWithNameAsEnclosingClass"
+          since="0.2"
+          message="Classes should not have a constructor method with the same name as the class"
+          class="PHP_PMD_Rule_Naming_ConstructorWithNameAsEnclosingClass"
+          externalInfoUrl="http://phpmd.org/rules/naming.html#constructorwithnameasenclosingclass">
+        <description>
+A constructor method should not have the same name as the enclosing class, consider
+to use the PHP 5 __construct method.
+        </description>
+        <priority>3</priority>
+        <example>
+            <![CDATA[
+class MyClass {
+     // this is bad because it is PHP 4 style
+    public function MyClass() {}
+    // this is good because it is a PHP 5 constructor
+    public function __construct() {}
+}
+    ]]>
+        </example>
+    </rule>
+
+    <rule name="ConstantNamingConventions"
+          since="0.2"
+          message="Constant {0} should be defined in uppercase"
+          class="PHP_PMD_Rule_Naming_ConstantNamingConventions"
+          externalInfoUrl="http://phpmd.org/rules/naming.html#constantnamingconventions">
+        <description>
+Class/Interface constant nanmes should always be defined in uppercase.
+        </description>
+        <priority>4</priority>
+        <properties />
+        <example>
+            <![CDATA[
+class Foo {
+    const MY_NUM = 0; // ok
+    const myTest = ""; // fail
+}
+            ]]>
+        </example>
+    </rule>
+
+    <rule name="BooleanGetMethodName"
+          since="0.2"
+          message="The '{0}()' method which returns a boolean should be named 'is...()' or 'has...()'"
+          class="PHP_PMD_Rule_Naming_BooleanGetMethodName"
+          externalInfoUrl="http://phpmd.org/rules/naming.html#booleangetmethodname">
+        <description>
+Looks for methods named 'getX()' with 'boolean' as the return type. The convention
+is to name these methods 'isX()' or 'hasX()'.
+        </description>
+        <priority>4</priority>
+        <properties>
+            <property name="checkParameterizedMethods" value="false" description="Applies only to methods without parameter when set to true" />
+        </properties>
+        <example>
+            <![CDATA[
+class Foo {
+    /**
+     * @return boolean
+     */
+    public function getFoo() {} // bad
+    /**
+     * @return bool
+     */
+    public function isFoo(); // ok
+    /**
+     * @return boolean
+     */
+    public function getFoo($bar); // ok, unless checkParameterizedMethods=true
+}
+            ]]>
+        </example>
+    </rule>
+
+
+</ruleset>
