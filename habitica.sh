@@ -365,7 +365,7 @@ function send_to_server() {
 	# pass the response via a GLOBAL
 	SERVER_RESPONSE="$(echo "$response" | jq -r "$2")";
 	if [ ! $? ]; then
-		echoerr "Failed to get $2 from server";
+		echoerr "Failed to get '$2' from server";
 		return 1;
 	fi;
 
