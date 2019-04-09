@@ -301,6 +301,14 @@ function send_to_server() {
 	fi;
 
 
+	## start logging
+	{ 
+		echo;
+		echo;
+		echo "send_to_server@ $(date)";
+	} >> "$LOG";
+
+
 	if [ -z "$1" ]; then
 		echoerr "URL not passed";
 		return 1;
