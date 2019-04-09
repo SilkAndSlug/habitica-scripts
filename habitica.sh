@@ -347,6 +347,10 @@ function send_to_server() {
 	#echo "send_to_server::response $response";
 
 
+	## log response
+	echo "send_to_server::response $response" >> "$LOG";
+
+
 	# if we've failed, return the reason
 	success="$(echo "$response" | jq -r .success)";
 	#echo "send_to_server::success $success";
