@@ -733,6 +733,10 @@ function route_command() {
 #	0|1			1 on failure, else 0
 ########
 function main() {
+	if [ ! -f "$LOG" ]; then
+		echoerr "Can't find $LOG; quitting";
+		return 1;
+	fi;
 	load_config || return 1;
 	route_command "$@" || return 1;
 	return 0;
