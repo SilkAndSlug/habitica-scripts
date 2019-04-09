@@ -741,8 +741,12 @@ function main() {
 		echoerr "Can't write to $LOG; quitting";
 		return 1;
 	fi;
+
+
 	load_config || return 1;
 	route_command "$@" || return 1;
+
+
 	return 0;
 }
 
