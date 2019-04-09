@@ -2,7 +2,7 @@
 
 
 <project 
-	name="??Client??"
+	name="Habitica-Scripts"
 	default="help"
 	description="Localised wrapper for SilkAndSlug-style project automation"
 >
