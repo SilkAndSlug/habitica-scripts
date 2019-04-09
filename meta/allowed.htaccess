@@ -1,0 +1,4 @@
+# Allow e.g. web-browsers to access the directory
+Satisfy Any
+Order Allow,Deny
+Allow from All

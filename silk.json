@@ -1,0 +1,7 @@
+{
+	"lint":		true,
+	"phpCPD":	false,
+	"phpDCD":	false,
+	"phpMD":	true,
+	"phpUnit":	true
+}

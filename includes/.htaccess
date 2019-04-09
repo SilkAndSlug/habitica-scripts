@@ -1,0 +1,4 @@
+# Block e.g. web-browsers accessing the directory
+Satisfy All
+Order Deny,Allow
+Deny from All
