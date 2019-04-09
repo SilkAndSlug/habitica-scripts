@@ -39,6 +39,14 @@ export readonly AWAKE=0;
 
 
 
+########
+# Log
+########
+
+export readonly LOG=/var/log/habitica/habitica.log
+
+
+
 ###############################################################################
 ## Init vars
 ###############################################################################
@@ -293,6 +301,21 @@ function send_to_server() {
 	fi;
 
 
+	## start logging
+	{ 
+		echo;
+		echo;
+		echo "send_to_server@ $(date)";
+	} >> "$LOG";
+
+
+	## log inputs
+	{
+		echo "send_to_server::1 $1";
+		echo "send_to_server::2 $2";
+	} >> "$LOG";
+
+
 	if [ -z "$1" ]; then
 		echoerr "URL not passed";
 		return 1;
@@ -324,6 +347,10 @@ function send_to_server() {
 	#echo "send_to_server::response $response";
 
 
+	## log response
+	echo "send_to_server::response $response" >> "$LOG";
+
+
 	# if we've failed, return the reason
 	success="$(echo "$response" | jq -r .success)";
 	#echo "send_to_server::success $success";
@@ -338,7 +365,7 @@ function send_to_server() {
 	# pass the response via a GLOBAL
 	SERVER_RESPONSE="$(echo "$response" | jq -r "$2")";
 	if [ ! $? ]; then
-		echoerr "Failed to get $2 from server";
+		echoerr "Failed to get '$2' from server";
 		return 1;
 	fi;
 
@@ -725,8 +752,20 @@ function route_command() {
 #	0|1			1 on failure, else 0
 ########
 function main() {
+	if [ ! -f "$LOG" ]; then
+		echoerr "Can't find $LOG; quitting";
+		return 1;
+	fi;
+	if [ ! -w "$LOG" ]; then
+		echoerr "Can't write to $LOG; quitting";
+		return 1;
+	fi;
+
+
 	load_config || return 1;
 	route_command "$@" || return 1;
+
+
 	return 0;
 }
 
