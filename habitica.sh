@@ -309,6 +309,13 @@ function send_to_server() {
 	} >> "$LOG";
 
 
+	## log inputs
+	{
+		echo "send_to_server::1 $1";
+		echo "send_to_server::2 $2";
+	} >> "$LOG";
+
+
 	if [ -z "$1" ]; then
 		echoerr "URL not passed";
 		return 1;
