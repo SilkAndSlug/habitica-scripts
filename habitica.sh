@@ -73,10 +73,10 @@ export SERVER_RESPONSE='';
 # Returns
 #	0|1			1 on failure, else 0
 ########
-function echoerr() {
+echoerr() {
 	if [ 1 -ne $# ]; then return 1; fi;
 
-	echo -e "$1" 1>&2;
+	printf "%b\n" "$1" 1>&2;
 	return 0;
 }
 
@@ -94,7 +94,7 @@ function echoerr() {
 # Returns
 #	0|1			1 on failure, else 0
 ########
-function echo_usage() {
+echo_usage() {
 	local self;
 	self="$(basename "$0")";
 
@@ -124,7 +124,7 @@ function echo_usage() {
 # Returns
 #	0|1			1 on failure, else 0
 ########
-function echo_usage_cast() {
+echo_usage_cast() {
 	local self;
 	self="$(basename "$0")";
 
@@ -155,7 +155,7 @@ function echo_usage_cast() {
 # Returns
 #	0|1			1 on failure, else 0
 ########
-function load_config() {
+load_config() {
 	if [ ! -f "$HOME/.habitica" ]; then
 		echoerr "Can't find ~/.habitica; quitting"
 		exit 1;
@@ -170,7 +170,7 @@ function load_config() {
 
 	## load config file
 	# shellcheck	source=/home/steve/.habitica
-	source "$HOME/.habitica";
+	. "$HOME/.habitica";
 
 
 	## check configs
@@ -221,7 +221,7 @@ function load_config() {
 #	0|1			1 on failure, else 0
 #	stderr		Error from server
 ########
-function get_from_server() {
+get_from_server() {
 	if [ 2 -ne $# ]; then
 		echoerr "Usage: get_from_server <relative URL> <response filter>";
 		return 1;
@@ -294,7 +294,7 @@ function get_from_server() {
 # Returns
 #	0|1			1 on failure, else 0
 ########
-function send_to_server() {
+send_to_server() {
 	if [ 2 -ne $# ]; then
 		echoerr "Usage: send_to_server <relative URL> <response filter>";
 		return 1;
@@ -387,7 +387,7 @@ function send_to_server() {
 # Returns
 #	0|1			1 on failure, else 0
 ########
-function accept_quest() {
+accept_quest() {
 	local message;
 
 
@@ -432,7 +432,7 @@ function accept_quest() {
 #	0|1			1 on failure, else 0
 #	2			Server is *not* up
 ########
-function get_api_status() {
+get_api_status() {
 	get_from_server 'status' '.data.status' || return 1;
 
 	## server may be down -- this is not an error in our script, so don't return 1
@@ -458,7 +458,7 @@ function get_api_status() {
 # Returns
 #	0|1			1 on failure, else 0
 ########
-function sleeping_start() {
+sleeping_start() {
 	local state;
 
 
@@ -498,7 +498,7 @@ function sleeping_start() {
 # Returns
 #	0|1			1 on failure, else 0
 ########
-function sleeping_stop() {
+sleeping_stop() {
 	local state;
 
 
@@ -539,7 +539,7 @@ function sleeping_stop() {
 #	1			Failure
 #	2			Asleep
 ########
-function sleeping_toggle() {
+sleeping_toggle() {
 	local response return;
 
 	send_to_server 'user/sleep' '.data' || return 1;
@@ -565,7 +565,7 @@ function sleeping_toggle() {
 # Returns
 #	0|1			1 on failure, else 0
 ########
-function cast_freeze() {
+cast_freeze() {
 	send_to_server 'user/class/cast/frost' '.success' || return 1;
 	if [ 'true' != "$SERVER_RESPONSE" ]; then return 1; fi;
 
@@ -586,7 +586,7 @@ function cast_freeze() {
 # Returns
 #	0|1			1 on failure, else 0
 ########
-function cast_heal() {
+cast_heal() {
 	send_to_server 'user/class/cast/healAll' '.success' || return 1;
 	if [ 'true' != "$SERVER_RESPONSE" ]; then return 1; fi;
 
@@ -608,7 +608,7 @@ function cast_heal() {
 # Returns
 #	0|1			1 on failure, else 0
 ########
-function route_command() {
+route_command() {
 	if [ 1 -gt $# ]; then
 		echoerr "Can't find command; quitting";
 
@@ -751,7 +751,7 @@ function route_command() {
 # Returns
 #	0|1			1 on failure, else 0
 ########
-function main() {
+main() {
 	if [ ! -f "$LOG" ]; then
 		echoerr "Can't find $LOG; quitting";
 		return 1;
