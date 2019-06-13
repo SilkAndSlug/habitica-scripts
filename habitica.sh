@@ -393,7 +393,7 @@ function accept_quest() {
 
 	## accept quest
 	message="$(send_to_server "groups/$GROUP_ID/quests/accept" '.message' 2>&1)";	# catch stderr and ignore return, as already-questing is an error
-	#echo "accept_quest::message $message";
+	echo "accept_quest::message $message";
 
 
 	## 'no invites' returns 1, so ignore that "error"
