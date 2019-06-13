@@ -76,7 +76,7 @@ export SERVER_RESPONSE='';
 echoerr() {
 	if [ 1 -ne $# ]; then return 1; fi;
 
-	echo -e "$1" 1>&2;
+	printf "%b\n" "$1" 1>&2;
 	return 0;
 }
 
