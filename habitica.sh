@@ -44,6 +44,7 @@ export readonly AWAKE=0;
 ########
 
 export readonly LOG=/var/log/habitica/habitica.log
+echo "LOG $LOG";
 
 
 
