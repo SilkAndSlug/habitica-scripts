@@ -405,6 +405,10 @@ accept_quest() {
 	fi;
 
 
+	## debugging
+	echoerr "accept_quest::message $message";
+
+
 	## 'no invites' returns 1, so ignore that "error"
 	if [ 'No quest invitation found.' = "$message" ]; then
 		return 0;
