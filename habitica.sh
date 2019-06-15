@@ -397,6 +397,9 @@ accept_quest() {
 
 
 	## catch expected responses and return 0
+	if [ 'Your party is already on a quest. Try again when the current quest has ended.' = "$message" ]; then
+		return 0;
+	fi;
 
 
 	## 'no invites' returns 1, so ignore that "error"
@@ -404,10 +407,6 @@ accept_quest() {
 		return 0;
 	fi;
 
-	## 'already questing' returns 1, so ignore that "error"
-	if [ 'Your party is already on a quest. Try again when the current quest has ended.' = "$message" ]; then
-		return 0;
-	fi;
 
 	## 'already accepted' returns 1, so ignore that "error"
 	if [ 'You already accepted the quest invitation.' = "$message" ]; then
