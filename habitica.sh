@@ -399,12 +399,15 @@ accept_quest() {
 
 	## catch expected responses and return 0
 	if [ 'Your party is already on a quest. Try again when the current quest has ended.' = "$message" ]; then
+#		echo "Quest in-progress";
 		return 0;
 	fi;
 	if [ 'You already accepted the quest invitation.' = "$message" ]; then
+#		echo "Invitation accepted and waiting to start";
 		return 0;
 	fi;
 	if [ 'No quest invitation found.' = "$message" ]; then
+#		echo "Waiting for a Quest invitation";
 		return 0;
 	fi;
 
