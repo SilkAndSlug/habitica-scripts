@@ -417,7 +417,7 @@ accept_quest() {
 
 
 	## debugging
-	echoerr "accept_quest::message $message";
+	#echoerr "accept_quest::message $message";
 
 
 	## anything else is an error, so echo and quit
