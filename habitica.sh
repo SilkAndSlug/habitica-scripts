@@ -421,6 +421,7 @@ accept_quest() {
 
 
 	## anything else is an error, so echo and quit
+	echo "Failed to accept quest";
 	echoerr "$message";
 	return 1;
 }
