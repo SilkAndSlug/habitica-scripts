@@ -402,6 +402,10 @@ accept_quest() {
 #		echo "Quest in-progress";
 		return 0;
 	fi;
+	if [ 'The quest has already started, but you can always catch the next one!' = "$message" ]; then
+#		echo "Quest in-progress";
+		return 0;
+	fi;
 	if [ 'You already accepted the quest invitation.' = "$message" ]; then
 #		echo "Invitation accepted and waiting to start";
 		return 0;
@@ -413,10 +417,11 @@ accept_quest() {
 
 
 	## debugging
-	echoerr "accept_quest::message $message";
+	#echoerr "accept_quest::message $message";
 
 
 	## anything else is an error, so echo and quit
+	echo "Failed to accept quest";
 	echoerr "$message";
 	return 1;
 }
