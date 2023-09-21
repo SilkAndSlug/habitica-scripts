@@ -306,7 +306,7 @@ send_to_server() {
 	{ 
 		echo;
 		echo;
-		echo "send_to_server@ $(date)";
+		echo "send_to_server @ $(date)";
 	} >> "$LOG";
 
 
