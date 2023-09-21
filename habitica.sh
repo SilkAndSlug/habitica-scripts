@@ -26,7 +26,7 @@ set -e;	# exit on (uncaught) error
 # Entry-point to the REST-ful API
 ########
 
-export readonly HABITICA_API='https://habitica.com/api/v3';
+readonly HABITICA_API='https://habitica.com/api/v3';
 
 
 
@@ -34,8 +34,8 @@ export readonly HABITICA_API='https://habitica.com/api/v3';
 # Non-standard return values
 ########
 
-export readonly ASLEEP=2;
-export readonly AWAKE=0;
+readonly ASLEEP=2;
+readonly AWAKE=0;
 
 
 
@@ -43,8 +43,8 @@ export readonly AWAKE=0;
 # Log
 ########
 
-export readonly LOG=/var/log/habitica/habitica.log
-echo "LOG $LOG";
+readonly LOG=/var/log/habitica/habitica.log
+#echo "LOG $LOG";
 
 
 
@@ -170,7 +170,7 @@ load_config() {
 
 
 	## load config file
-	# shellcheck	source=/home/steve/.habitica
+	# shellcheck	source=/home/silkandslug/.habitica
 	. "$HOME/.habitica";
 
 
@@ -195,9 +195,9 @@ load_config() {
 
 
 	## make configs readonly
-	export readonly GROUP_ID="$group_id";
-	export readonly USER_ID="$user_id";
-	export readonly API_TOKEN="$api_token";
+	readonly GROUP_ID="$group_id";
+	readonly USER_ID="$user_id";
+	readonly API_TOKEN="$api_token";
 
 
 	return 0;
