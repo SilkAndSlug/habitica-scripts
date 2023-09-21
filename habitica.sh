@@ -603,7 +603,10 @@ cast_freeze() {
 ########
 cast_heal() {
 	send_to_server 'user/class/cast/healAll' '.success' || return 1;
-	if [ 'true' != "$SERVER_RESPONSE" ]; then return 1; fi;
+	if [ 'true' != "$SERVER_RESPONSE" ]; then
+		tail "$LOG";
+		return 1; 
+	fi;
 
 	return 0;
 }
