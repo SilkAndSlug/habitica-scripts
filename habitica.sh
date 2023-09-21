@@ -170,7 +170,7 @@ load_config() {
 
 
 	## load config file
-	# shellcheck	source=/home/steve/.habitica
+	# shellcheck	source=/home/silkandslug/.habitica
 	. "$HOME/.habitica";
 
 
