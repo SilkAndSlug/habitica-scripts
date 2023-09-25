@@ -43,7 +43,7 @@ readonly AWAKE=0;
 # Log
 ########
 
-readonly LOG=/var/log/habitica/habitica.log
+readonly LOG=~/.logs/habitica.log
 #echo "LOG $LOG";
 
 
@@ -303,7 +303,7 @@ send_to_server() {
 
 
 	## start logging
-	{ 
+	{
 		echo;
 		echo;
 		echo "send_to_server @ $(date)";
