@@ -303,7 +303,7 @@ send_to_server() {
 
 
 	## start logging
-	{ 
+	{
 		echo;
 		echo;
 		echo "send_to_server @ $(date)";
