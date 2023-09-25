@@ -43,7 +43,7 @@ readonly AWAKE=0;
 # Log
 ########
 
-readonly LOG=/var/log/habitica/habitica.log
+readonly LOG=~/.logs/habitica.log
 #echo "LOG $LOG";
 
 
